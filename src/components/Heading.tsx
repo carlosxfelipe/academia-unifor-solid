@@ -1,9 +1,14 @@
 import { JSX } from "solid-js";
 
-interface HeadingProps {
+interface Props {
   level: 1 | 2 | 3 | 4 | 5 | 6;
   children: JSX.Element;
   color?: string;
+  alignCenter?: boolean;
+  alignRight?: boolean;
+  uppercase?: boolean;
+  lowercase?: boolean;
+  justify?: boolean;
 }
 
 const defaultColor = "text-gray-700 dark:text-gray-300";
@@ -17,10 +22,28 @@ const headingStyles = {
   6: `text-lg font-bold mb-1 text-left`,
 };
 
-export default function Heading({ level, children, color }: HeadingProps) {
+export default function Heading({
+  level,
+  children,
+  color,
+  alignCenter,
+  alignRight,
+  uppercase,
+  lowercase,
+  justify,
+}: Props) {
   const finalColor = color || defaultColor;
 
-  const combinedClassName = `${headingStyles[level]} ${finalColor}`;
+  let alignmentClass = "";
+  if (alignCenter) alignmentClass = "text-center";
+  if (alignRight) alignmentClass = "text-right";
+  if (justify) alignmentClass = "text-justify";
+
+  let textTransformClass = "";
+  if (uppercase) textTransformClass = "uppercase";
+  if (lowercase) textTransformClass = "lowercase";
+
+  const combinedClassName = `${headingStyles[level]} ${finalColor} ${alignmentClass} ${textTransformClass}`;
 
   switch (level) {
     case 1:
