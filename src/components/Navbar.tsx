@@ -2,7 +2,7 @@ import { useLocation } from "@solidjs/router";
 import { Home, User, LogOut } from "lucide-solid";
 import { UniforLogo } from "./UniforLogo";
 
-export default function Nav() {
+export default function Navbar() {
   const location = useLocation();
 
   const active = (path: string) =>
