@@ -3,26 +3,24 @@ import { JSX } from "solid-js";
 interface HeadingProps {
   level: 1 | 2 | 3 | 4 | 5 | 6;
   children: JSX.Element;
-  className?: string;
+  color?: string;
 }
 
 const defaultColor = "text-gray-700 dark:text-gray-300";
 
 const headingStyles = {
-  1: `text-5xl font-bold mb-8 text-left ${defaultColor}`,
-  2: `text-4xl font-bold mb-6 text-left ${defaultColor}`,
-  3: `text-3xl font-bold mb-4 text-left ${defaultColor}`,
-  4: `text-2xl font-bold mb-3 text-left ${defaultColor}`,
-  5: `text-xl font-bold mb-2 text-left ${defaultColor}`,
-  6: `text-lg font-bold mb-1 text-left ${defaultColor}`,
+  1: `text-5xl font-bold mb-8 text-left`,
+  2: `text-4xl font-bold mb-6 text-left`,
+  3: `text-3xl font-bold mb-4 text-left`,
+  4: `text-2xl font-bold mb-3 text-left`,
+  5: `text-xl font-bold mb-2 text-left`,
+  6: `text-lg font-bold mb-1 text-left`,
 };
 
-export default function Heading({
-  level,
-  children,
-  className = "",
-}: HeadingProps) {
-  const combinedClassName = `${headingStyles[level]} ${className}`;
+export default function Heading({ level, children, color }: HeadingProps) {
+  const finalColor = color || defaultColor;
+
+  const combinedClassName = `${headingStyles[level]} ${finalColor}`;
 
   switch (level) {
     case 1:
