@@ -11,8 +11,8 @@ export default function Navbar() {
       : "border-transparent hover:border-blue-200";
 
   return (
-    <nav class="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl shadow-xl transition-all duration-300">
-      <div class="w-full flex items-center justify-between p-3 text-gray-900 dark:text-white">
+    <nav class="bg-blue-700 text-white backdrop-blur-xl shadow-xl transition-all duration-300">
+      <div class="w-full flex items-center justify-between p-3">
         <span class="flex items-center text-2xl font-bold tracking-wide">
           <UniforLogo height={40} color="currentColor" />
           <span class="ml-2">Academia</span>
