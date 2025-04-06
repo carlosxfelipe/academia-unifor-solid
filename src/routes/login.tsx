@@ -54,41 +54,35 @@ const Login = () => {
           Bem-vindo!
         </h2>
         <form onSubmit={handleLogin} class="space-y-4">
-          <div class="relative">
-            <User
-              class="absolute left-3 top-3 text-gray-500 dark:text-gray-400"
-              size={20}
-            />
+          {/* Input de Usuário */}
+          <div class="flex items-center w-full border border-transparent rounded-xl bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-white shadow-sm focus-within:ring focus-within:ring-blue-500 transition-all duration-300 backdrop-blur-sm">
+            <User class="ml-3 text-gray-500 dark:text-gray-400" size={20} />
             <input
               type="text"
               placeholder="Usuário"
-              class="w-full p-3 pl-10 border border-transparent rounded-xl bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 shadow-sm focus:outline-none focus:ring focus:ring-blue-500 transition-all duration-300 backdrop-blur-sm"
+              class="flex-1 p-3 bg-transparent focus:outline-none placeholder:text-gray-500 dark:placeholder:text-gray-400"
               value={username()}
               onInput={(e) => setUsername(e.currentTarget.value)}
             />
           </div>
-
-          <div class="relative">
-            <Lock
-              class="absolute left-3 top-3 text-gray-500 dark:text-gray-400"
-              size={20}
-            />
+          {/* Input de Senha */}
+          <div class="flex items-center w-full border border-transparent rounded-xl bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-white shadow-sm focus-within:ring focus-within:ring-blue-500 transition-all duration-300 backdrop-blur-sm">
+            <Lock class="ml-3 text-gray-500 dark:text-gray-400" size={20} />
             <input
               type={isPasswordVisible() ? "text" : "password"}
               placeholder="Senha"
-              class="w-full p-3 pl-10 border border-transparent rounded-xl bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 shadow-sm focus:outline-none focus:ring focus:ring-blue-500 transition-all duration-300 backdrop-blur-sm"
+              class="flex-1 p-3 bg-transparent focus:outline-none placeholder:text-gray-500 dark:placeholder:text-gray-400"
               value={password()}
               onInput={(e) => setPassword(e.currentTarget.value)}
             />
             <button
               type="button"
-              class="absolute right-3 top-3 text-gray-500 dark:text-gray-400"
+              class="mr-3 text-gray-500 dark:text-gray-400"
               onClick={() => setIsPasswordVisible(!isPasswordVisible())}
             >
               {isPasswordVisible() ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
           </div>
-
           <button
             type="submit"
             class="w-full p-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors duration-300"
