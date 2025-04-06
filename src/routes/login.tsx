@@ -1,5 +1,6 @@
 import { createSignal, onCleanup, onMount } from "solid-js";
 import { useNavigate } from "@solidjs/router";
+import { Eye, EyeOff, User, Lock } from "lucide-solid";
 
 const images = [
   "/001.jpg",
@@ -14,6 +15,7 @@ const Login = () => {
   const [username, setUsername] = createSignal("");
   const [password, setPassword] = createSignal("");
   const [currentImageIndex, setCurrentImageIndex] = createSignal(0);
+  const [isPasswordVisible, setIsPasswordVisible] = createSignal(false);
   const navigate = useNavigate();
 
   const handleLogin = (e: Event) => {
@@ -47,26 +49,49 @@ const Login = () => {
       }}
     >
       <div class="absolute inset-0 bg-blue-900 opacity-50 z-0"></div>
-      <div class="relative p-8 bg-white dark:bg-gray-800 dark:text-white rounded-xl shadow-md w-96 backdrop-blur-sm z-10">
-        <h2 class="text-2xl mb-6 text-center">Bem-vindo!</h2>
-        <form onSubmit={handleLogin}>
-          <input
-            type="text"
-            placeholder="Usuário"
-            class="w-full mb-4 p-2 border rounded bg-gray-100 dark:bg-gray-700 text-black dark:text-white"
-            value={username()}
-            onInput={(e) => setUsername(e.currentTarget.value)}
-          />
-          <input
-            type="password"
-            placeholder="Senha"
-            class="w-full mb-4 p-2 border rounded bg-gray-100 dark:bg-gray-700 text-black dark:text-white"
-            value={password()}
-            onInput={(e) => setPassword(e.currentTarget.value)}
-          />
+      <div class="relative p-8 bg-white/70 dark:bg-gray-800/70 border border-gray-300 dark:border-white/40 rounded-xl shadow-xl w-96 backdrop-blur-xl z-10 transition-all duration-300">
+        <h2 class="text-2xl mb-6 text-center text-gray-900 dark:text-white">
+          Bem-vindo!
+        </h2>
+        <form onSubmit={handleLogin} class="space-y-4">
+          <div class="relative">
+            <User
+              class="absolute left-3 top-3 text-gray-500 dark:text-gray-400"
+              size={20}
+            />
+            <input
+              type="text"
+              placeholder="Usuário"
+              class="w-full p-3 pl-10 border border-transparent rounded-xl bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 shadow-sm focus:outline-none focus:ring focus:ring-blue-500 transition-all duration-300 backdrop-blur-sm"
+              value={username()}
+              onInput={(e) => setUsername(e.currentTarget.value)}
+            />
+          </div>
+
+          <div class="relative">
+            <Lock
+              class="absolute left-3 top-3 text-gray-500 dark:text-gray-400"
+              size={20}
+            />
+            <input
+              type={isPasswordVisible() ? "text" : "password"}
+              placeholder="Senha"
+              class="w-full p-3 pl-10 border border-transparent rounded-xl bg-white/70 dark:bg-gray-800/70 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 shadow-sm focus:outline-none focus:ring focus:ring-blue-500 transition-all duration-300 backdrop-blur-sm"
+              value={password()}
+              onInput={(e) => setPassword(e.currentTarget.value)}
+            />
+            <button
+              type="button"
+              class="absolute right-3 top-3 text-gray-500 dark:text-gray-400"
+              onClick={() => setIsPasswordVisible(!isPasswordVisible())}
+            >
+              {isPasswordVisible() ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
+
           <button
             type="submit"
-            class="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            class="w-full p-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-colors duration-300"
           >
             Entrar
           </button>
