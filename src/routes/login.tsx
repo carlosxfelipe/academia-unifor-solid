@@ -1,6 +1,7 @@
 import { createSignal, onCleanup, onMount } from "solid-js";
 import { useNavigate } from "@solidjs/router";
 import { Eye, EyeOff, User, Lock } from "lucide-solid";
+import { UniforLogo } from "~/components/UniforLogo";
 
 const images = [
   "/001.jpg",
@@ -50,6 +51,9 @@ const Login = () => {
     >
       <div class="absolute inset-0 bg-blue-900 opacity-50 z-0"></div>
       <div class="relative p-8 bg-white/70 dark:bg-gray-800/70 border border-gray-300 dark:border-white/40 rounded-xl shadow-xl w-96 backdrop-blur-xl z-10 transition-all duration-300">
+        <div class="flex justify-center mb-4 text-gray-900 dark:text-white">
+          <UniforLogo height={100} color="currentColor" />
+        </div>
         <h2 class="text-2xl mb-6 text-center text-gray-900 dark:text-white">
           Bem-vindo!
         </h2>
