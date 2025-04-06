@@ -1,4 +1,5 @@
 import Layout from "~/components/Layout";
+import StatusIndicator from "~/components/StatusIndicator";
 
 export default function Home() {
   return (
@@ -21,6 +22,7 @@ export default function Home() {
         <strong>professores que seguem em constante atualização</strong> de seus
         conhecimentos e técnicas.
       </p>
+      <StatusIndicator />
       <div class="flex justify-center mt-6">
         <iframe
           width="560"
