@@ -1,7 +1,8 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 
 :root {
-  --background-rgb: 214, 219, 220;
+  --background-rgb: 242, 242, 247;
   --foreground-rgb: 0, 0, 0;
 }
 
@@ -15,4 +16,5 @@
 body {
   background: rgb(var(--background-rgb));
   color: rgb(var(--foreground-rgb));
+  font-family: "Manrope", sans-serif;
 }
