@@ -20,17 +20,20 @@ export default function Nav() {
         <ul class="flex items-center space-x-6">
           <li class={`border-b ${active("/home")}`}>
             <a href="/home" class="flex items-center gap-1">
-              <Home size={18} /> Início
+              <Home size={18} />
+              <span class="hidden sm:inline">Início</span>
             </a>
           </li>
           <li class={`border-b ${active("/profile")}`}>
             <a href="/profile" class="flex items-center gap-1">
-              <User size={18} /> Perfil
+              <User size={18} />
+              <span class="hidden sm:inline">Perfil</span>
             </a>
           </li>
           <li class="border-b border-transparent hover:border-blue-200">
             <a href="/login" class="flex items-center gap-1">
-              <LogOut size={18} /> Sair
+              <LogOut size={18} />
+              <span class="hidden sm:inline">Sair</span>
             </a>
           </li>
         </ul>
