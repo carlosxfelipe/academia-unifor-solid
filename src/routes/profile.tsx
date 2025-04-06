@@ -3,7 +3,7 @@ export default function About() {
     <main class="text-gray-700 p-4 bg-gray-100 min-h-screen flex justify-center">
       <div class="p-12 bg-white rounded-xl shadow-md max-w-7xl w-full mx-auto mt-4">
         <h1 class="text-5xl text-blue-500 font-bold mb-8 text-left">
-          Bem-vindo a Sobre!
+          Bem-vindo a Perfil!
         </h1>
 
         <p class="mt-4 mb-8 text-gray-700 text-left">
