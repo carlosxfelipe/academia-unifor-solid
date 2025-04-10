@@ -33,14 +33,16 @@ export default function EquipmentsPage() {
             <h2 class="text-xl font-semibold mb-4">{category.category}</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {category.items.map((item) => (
-                <div class="border rounded-lg p-4 shadow bg-white text-black">
-                  {item.image && (
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      class="w-full h-40 object-contain mb-2"
-                    />
-                  )}
+                <div class="border rounded-lg p-4 shadow bg-white text-black dark:bg-black dark:text-white">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    class="w-full h-40 object-contain mb-2"
+                    onError={(e) =>
+                      (e.currentTarget.src =
+                        "https://img.icons8.com/ios7/600w/no-image.png")
+                    }
+                  />
                   <h3 class="text-lg font-bold">{item.name}</h3>
                   <p class="text-sm">
                     <strong>Marca:</strong> {item.brand}
