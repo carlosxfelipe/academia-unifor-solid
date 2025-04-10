@@ -1,5 +1,5 @@
 import { useLocation } from "@solidjs/router";
-import { Home, User, LogOut } from "lucide-solid";
+import { Home, User, LogOut, Dumbbell } from "lucide-solid";
 import { UniforLogo } from "./UniforLogo";
 
 export default function Navbar() {
@@ -22,6 +22,12 @@ export default function Navbar() {
             <a href="/home" class="flex items-center gap-1">
               <Home size={18} />
               <span class="hidden sm:inline">Início</span>
+            </a>
+          </li>
+          <li class={`border-b ${active("/equipments")}`}>
+            <a href="/equipments" class="flex items-center gap-1">
+              <Dumbbell size={18} />
+              <span class="hidden sm:inline">Equipamentos</span>
             </a>
           </li>
           <li class={`border-b ${active("/profile")}`}>
