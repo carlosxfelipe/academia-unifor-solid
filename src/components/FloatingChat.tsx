@@ -1,6 +1,5 @@
 import { createSignal, Show } from "solid-js";
 import { Send, MessageCircle } from "lucide-solid";
-import "./FloatingChat.css";
 
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
@@ -58,37 +57,40 @@ export default function FloatingChat() {
   }
 
   return (
-    <div class="fixed bottom-4 right-4 z-50">
-      {/* Botão para abrir */}
+    <div class="fixed bottom-5 right-5 z-50">
       <Show when={!open()}>
         <button
           onClick={() => setOpen(true)}
-          class="bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition"
+          class="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full shadow-2xl transition-transform hover:scale-105"
         >
-          <MessageCircle size={24} />
+          <MessageCircle size={26} />
         </button>
       </Show>
 
-      {/* Janela de chat */}
       <Show when={open()}>
-        <div class="w-80 h-96 bg-white dark:bg-gray-800 border rounded-xl shadow-lg flex flex-col">
-          <div class="flex justify-between items-center bg-blue-600 text-white px-4 py-2 rounded-t-xl">
-            <span>Chat</span>
-            <button onClick={() => setOpen(false)}>✖</button>
+        <div class="w-80 h-96 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl flex flex-col animate-fade-in">
+          <div class="flex justify-between items-center bg-blue-600 text-white px-4 py-3 rounded-t-2xl">
+            <span class="font-semibold">Chat com a Academia</span>
+            <button
+              onClick={() => setOpen(false)}
+              class="hover:bg-blue-700 hover:scale-105 px-2 py-1 rounded transition"
+            >
+              ✖
+            </button>
           </div>
 
-          <div class="flex-1 overflow-y-auto p-2 space-y-2">
+          <div class="flex-1 overflow-y-auto p-3 space-y-2">
             {messages().map((msg) => (
               <div
-                class={`self-${
-                  msg.sender === "Você" ? "end text-right" : "start"
+                class={`text-sm ${
+                  msg.sender === "Você" ? "text-right" : "text-left"
                 }`}
               >
                 <div
-                  class={`inline-block p-2 rounded-xl text-sm ${
+                  class={`inline-block px-3 py-2 rounded-xl ${
                     msg.sender === "Você"
-                      ? "bg-blue-200 dark:bg-blue-700"
-                      : "bg-gray-300 dark:bg-gray-700"
+                      ? "bg-blue-100 dark:bg-blue-700 text-blue-900 dark:text-white"
+                      : "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white"
                   }`}
                 >
                   <strong>{msg.sender}:</strong> {msg.message}
@@ -100,18 +102,18 @@ export default function FloatingChat() {
             )}
           </div>
 
-          <div class="p-2 border-t flex gap-2">
+          <div class="p-3 border-t dark:border-gray-700 flex gap-2">
             <input
               type="text"
-              class="flex-1 p-2 rounded-lg border dark:bg-gray-900 dark:text-white"
-              placeholder="Digite sua pergunta..."
+              class="flex-1 px-3 py-2 rounded-full border border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white focus:outline-none"
+              placeholder="Digite aqui..."
               value={input()}
               onInput={(e) => setInput(e.currentTarget.value)}
               onKeyDown={(e) => e.key === "Enter" && sendMessage()}
             />
             <button
               onClick={sendMessage}
-              class="bg-blue-500 text-white px-3 rounded-lg hover:bg-blue-600"
+              class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-full transition disabled:opacity-50"
               disabled={isLoading()}
             >
               <Send size={18} />
