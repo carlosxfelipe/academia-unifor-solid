@@ -1,4 +1,5 @@
 import { createSignal } from "solid-js";
+import { Send } from "lucide-solid";
 import Layout from "~/components/Layout";
 
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
@@ -82,7 +83,7 @@ export default function ChatPage() {
         <div class="flex gap-2">
           <input
             type="text"
-            class="flex-1 p-2 border rounded dark:bg-gray-900 dark:text-white"
+            class="flex-1 p-3 rounded-full border border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200 shadow-sm"
             placeholder="Digite sua pergunta..."
             value={input()}
             onInput={(e) => setInput(e.currentTarget.value)}
@@ -90,10 +91,11 @@ export default function ChatPage() {
           />
           <button
             onClick={sendMessage}
-            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            class="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 flex items-center gap-2 disabled:opacity-50 transition-all duration-200"
             disabled={isLoading()}
           >
-            Enviar
+            <Send size={20} />
+            <span>Enviar</span>
           </button>
         </div>
       </div>
