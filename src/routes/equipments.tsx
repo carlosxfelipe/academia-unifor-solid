@@ -24,7 +24,7 @@ export default function EquipmentsPage() {
         <input
           type="text"
           placeholder="Buscar por nome..."
-          class="mb-6 w-full p-2 rounded border border-gray-300"
+          class="mb-6 w-full px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white focus:outline-none"
           onInput={(e) => setSearch(e.currentTarget.value)}
         />
 
@@ -33,7 +33,7 @@ export default function EquipmentsPage() {
             <h2 class="text-xl font-semibold mb-4">{category.category}</h2>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {category.items.map((item) => (
-                <div class="border rounded-lg p-4 shadow bg-white text-black dark:bg-black dark:text-white">
+                <div class="border border-gray-300 dark:border-gray-700 rounded-lg p-4 shadow-sm bg-white text-black dark:bg-zinc-900 dark:text-white">
                   <img
                     src={item.image}
                     alt={item.name}
