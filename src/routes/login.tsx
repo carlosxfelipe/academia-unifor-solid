@@ -2,6 +2,7 @@ import { createSignal, onCleanup, onMount } from "solid-js";
 import { useNavigate } from "@solidjs/router";
 import { Eye, EyeOff, User, Lock } from "lucide-solid";
 import { UniforLogo } from "~/components/UniforLogo";
+import users from "../../mocks/users.json";
 
 const images = [
   "/001.jpg",
@@ -21,15 +22,21 @@ const Login = () => {
 
   const handleLogin = (e: Event) => {
     e.preventDefault();
-    if (username() === "user" && password() === "user") {
+
+    const user = users.find(
+      (u) => u.email === username() && u.password === password()
+    );
+
+    if (user) {
       localStorage.setItem("authenticated", "true");
+      localStorage.setItem("user", JSON.stringify(user)); // salva o usuário logado
       navigate("/home");
     } else {
       alert("Usuário ou senha inválidos!");
     }
   };
 
-  let intervalId: number;
+  let intervalId: ReturnType<typeof setInterval>;
 
   onMount(() => {
     intervalId = setInterval(() => {
