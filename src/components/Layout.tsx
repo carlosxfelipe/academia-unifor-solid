@@ -1,6 +1,7 @@
 import { Component } from "solid-js";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
+import FloatingChat from "./FloatingChat";
 
 interface LayoutProps {
   children: any;
@@ -15,6 +16,7 @@ const Layout: Component<LayoutProps> = (props) => {
         <Navbar />
         {props.children}
         <Footer />
+        <FloatingChat />
       </>
     );
   }
@@ -32,6 +34,7 @@ const Layout: Component<LayoutProps> = (props) => {
         </div>
       </main>
       <Footer />
+      <FloatingChat />
     </>
   );
 };
