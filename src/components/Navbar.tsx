@@ -1,12 +1,12 @@
 import { useLocation, useNavigate } from "@solidjs/router";
-import { Home, User, LogOut, Dumbbell } from "lucide-solid";
+import { Home, User, LogOut, Dumbbell, Settings } from "lucide-solid";
 import { UniforLogo } from "./UniforLogo";
 import { useUser } from "~/contexts/UserContext";
 
 export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { setUser } = useUser();
+  const { user, setUser } = useUser();
 
   const active = (path: string) =>
     path === location.pathname
@@ -55,6 +55,14 @@ export default function Navbar() {
               <span class="hidden sm:inline">Sair</span>
             </button>
           </li>
+          {user?.isAdmin && (
+            <li class={`border-b ${active("/admin")}`}>
+              <a href="/admin" class="flex items-center gap-1">
+                <Settings size={18} />
+                <span class="hidden sm:inline">Admin</span>
+              </a>
+            </li>
+          )}
         </ul>
       </div>
     </nav>
