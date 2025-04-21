@@ -31,6 +31,11 @@ export default function ProfilePage() {
         <h2 class="text-xl font-bold">{user.name}</h2>
         <p>{user.email}</p>
         <p>{user.phone}</p>
+        <p>{user.address}</p>
+        <p>Data de nascimento: {user.birthDate}</p>
+        {user.isAdmin && (
+          <p class="text-sm mt-2 text-blue-500 font-semibold">Administrador</p>
+        )}
       </div>
 
       <div class="space-y-8">
