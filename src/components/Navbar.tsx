@@ -1,14 +1,24 @@
-import { useLocation } from "@solidjs/router";
+import { useLocation, useNavigate } from "@solidjs/router";
 import { Home, User, LogOut, Dumbbell } from "lucide-solid";
 import { UniforLogo } from "./UniforLogo";
+import { useUser } from "~/contexts/UserContext";
 
 export default function Navbar() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { setUser } = useUser();
 
   const active = (path: string) =>
     path === location.pathname
       ? "border-blue-200"
       : "border-transparent hover:border-blue-200";
+
+  const logout = () => {
+    localStorage.removeItem("authenticated");
+    localStorage.removeItem("user");
+    setUser(null);
+    navigate("/login", { replace: true });
+  };
 
   return (
     <nav class="bg-blue-700 text-white backdrop-blur-xl shadow-xl transition-all duration-300">
@@ -37,10 +47,13 @@ export default function Navbar() {
             </a>
           </li>
           <li class="border-b border-transparent hover:border-blue-200">
-            <a href="/login" class="flex items-center gap-1">
+            <button
+              onClick={logout}
+              class="flex items-center gap-1 focus:outline-none"
+            >
               <LogOut size={18} />
               <span class="hidden sm:inline">Sair</span>
-            </a>
+            </button>
           </li>
         </ul>
       </div>

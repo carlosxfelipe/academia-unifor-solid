@@ -3,6 +3,7 @@ import { useNavigate } from "@solidjs/router";
 import { Eye, EyeOff, User, Lock } from "lucide-solid";
 import { UniforLogo } from "~/components/UniforLogo";
 import users from "../../mocks/users.json";
+import { useUser } from "~/contexts/UserContext";
 
 const images = [
   "/001.jpg",
@@ -19,6 +20,7 @@ const Login = () => {
   const [currentImageIndex, setCurrentImageIndex] = createSignal(0);
   const [isPasswordVisible, setIsPasswordVisible] = createSignal(false);
   const navigate = useNavigate();
+  const { setUser } = useUser();
 
   const handleLogin = (e: Event) => {
     e.preventDefault();
@@ -30,6 +32,7 @@ const Login = () => {
     if (user) {
       localStorage.setItem("authenticated", "true");
       localStorage.setItem("user", JSON.stringify(user)); // salva o usuário logado
+      setUser(user);
       navigate("/home");
     } else {
       alert("Usuário ou senha inválidos!");
