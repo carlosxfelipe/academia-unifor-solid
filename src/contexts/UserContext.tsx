@@ -1,4 +1,10 @@
-import { createContext, useContext, createSignal, JSX } from "solid-js";
+import {
+  createContext,
+  useContext,
+  createSignal,
+  onMount,
+  JSX,
+} from "solid-js";
 
 type User = {
   id: number;
@@ -17,12 +23,18 @@ type UserContextType = {
 const UserContext = createContext<UserContextType>();
 
 export function UserProvider(props: { children: JSX.Element }) {
-  const storedUser =
-    typeof window !== "undefined"
-      ? JSON.parse(localStorage.getItem("user") || "null")
-      : null;
+  const [user, setUser] = createSignal<User | null>(null);
 
-  const [user, setUser] = createSignal<User | null>(storedUser);
+  onMount(() => {
+    const stored = localStorage.getItem("user");
+    if (stored) {
+      try {
+        setUser(JSON.parse(stored));
+      } catch {
+        localStorage.removeItem("user");
+      }
+    }
+  });
 
   const setAndPersistUser = (newUser: User | null) => {
     setUser(newUser);
