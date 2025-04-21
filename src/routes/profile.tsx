@@ -27,7 +27,7 @@ export default function ProfilePage() {
 
   return (
     <Layout>
-      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 mb-10">
+      <div class="bg-slate-50 dark:bg-gray-900 rounded-2xl shadow-lg p-8 mb-10 transition-colors">
         <div class="flex flex-col items-center text-center">
           <img
             src={user.avatarUrl}
@@ -66,7 +66,7 @@ export default function ProfilePage() {
       <div class="space-y-8">
         {user.workouts?.length > 0 ? (
           user.workouts.map((workout: Workout) => (
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md">
+            <div class="bg-slate-50 dark:bg-gray-900 p-6 rounded-xl shadow-md transition-colors">
               <h3 class="text-2xl font-semibold text-blue-600 dark:text-blue-400 mb-2">
                 {workout.name}
               </h3>
