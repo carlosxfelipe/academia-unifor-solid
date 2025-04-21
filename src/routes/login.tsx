@@ -22,20 +22,53 @@ const Login = () => {
   const navigate = useNavigate();
   const { setUser } = useUser();
 
-  const handleLogin = (e: Event) => {
+  // const handleLogin = (e: Event) => {
+  //   e.preventDefault();
+
+  //   const user = users.find(
+  //     (u) => u.email === username() && u.password === password()
+  //   );
+
+  //   if (user) {
+  //     localStorage.setItem("authenticated", "true");
+  //     localStorage.setItem("user", JSON.stringify(user)); // salva o usuário logado
+  //     setUser(user);
+  //     navigate("/home");
+  //   } else {
+  //     alert("Usuário ou senha inválidos!");
+  //   }
+  // };
+
+  const handleLogin = async (e: Event) => {
     e.preventDefault();
 
-    const user = users.find(
-      (u) => u.email === username() && u.password === password()
-    );
+    try {
+      const response = await fetch(
+        "https://academia-unifor-fastapi.onrender.com/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: username(),
+            password: password(),
+          }),
+        }
+      );
 
-    if (user) {
-      localStorage.setItem("authenticated", "true");
-      localStorage.setItem("user", JSON.stringify(user)); // salva o usuário logado
-      setUser(user);
-      navigate("/home");
-    } else {
-      alert("Usuário ou senha inválidos!");
+      if (response.ok) {
+        const user = await response.json();
+        localStorage.setItem("authenticated", "true");
+        localStorage.setItem("user", JSON.stringify(user));
+        setUser(user);
+        navigate("/home");
+      } else {
+        alert("Usuário ou senha inválidos!");
+      }
+    } catch (error) {
+      alert("Erro ao conectar com o servidor.");
+      console.error(error);
     }
   };
 
