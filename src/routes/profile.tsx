@@ -1,5 +1,6 @@
 import Layout from "~/components/Layout";
 import { useUser } from "~/contexts/UserContext";
+import { Mail, Phone, MapPin, Calendar, ShieldCheck } from "lucide-solid";
 
 type Exercise = {
   name: string;
@@ -26,16 +27,40 @@ export default function ProfilePage() {
 
   return (
     <Layout>
-      <div class="text-center mb-8">
-        <img src={user.avatarUrl} class="w-24 h-24 mx-auto rounded-full mb-4" />
-        <h2 class="text-xl font-bold">{user.name}</h2>
-        <p>{user.email}</p>
-        <p>{user.phone}</p>
-        <p>{user.address}</p>
-        <p>Data de nascimento: {user.birthDate}</p>
-        {user.isAdmin && (
-          <p class="text-sm mt-2 text-blue-500 font-semibold">Administrador</p>
-        )}
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 mb-10">
+        <div class="flex flex-col items-center text-center">
+          <img
+            src={user.avatarUrl}
+            alt={user.name}
+            class="w-28 h-28 rounded-full shadow-md mb-4"
+          />
+          <h2 class="text-2xl font-bold mb-1">{user.name}</h2>
+          {user.isAdmin && (
+            <div class="flex items-center text-blue-500 text-sm font-semibold mt-1">
+              <ShieldCheck class="w-4 h-4 mr-1" />
+              Administrador
+            </div>
+          )}
+        </div>
+
+        <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 text-gray-700 dark:text-gray-300">
+          <div class="flex items-center">
+            <Mail class="w-5 h-5 mr-2 text-blue-500" />
+            <span>{user.email}</span>
+          </div>
+          <div class="flex items-center">
+            <Phone class="w-5 h-5 mr-2 text-blue-500" />
+            <span>{user.phone}</span>
+          </div>
+          <div class="flex items-center">
+            <MapPin class="w-5 h-5 mr-2 text-blue-500" />
+            <span>{user.address}</span>
+          </div>
+          <div class="flex items-center">
+            <Calendar class="w-5 h-5 mr-2 text-blue-500" />
+            <span>{user.birthDate}</span>
+          </div>
+        </div>
       </div>
 
       <div class="space-y-8">
