@@ -2,8 +2,11 @@ import { useLocation, useNavigate } from "@solidjs/router";
 import { Home, User, LogOut, Dumbbell, Settings } from "lucide-solid";
 import { UniforLogo } from "./UniforLogo";
 import { useUser } from "~/contexts/UserContext";
+import { useIsMobile } from "~/hooks/useIsMobile";
 
 export default function Navbar() {
+  const isMobile = useIsMobile();
+
   const location = useLocation();
   const navigate = useNavigate();
   const { user, setUser } = useUser();
@@ -24,8 +27,8 @@ export default function Navbar() {
     <nav class="bg-blue-700 text-white backdrop-blur-xl shadow-xl transition-all duration-300">
       <div class="w-full flex items-center justify-between p-3">
         <span class="flex items-center text-2xl font-bold tracking-wide">
-          <UniforLogo height={40} color="currentColor" />
-          <span class="ml-2">Academia</span>
+          <UniforLogo height={isMobile() ? 30 : 40} color="currentColor" />
+          {!isMobile() && <span class="ml-2">Academia</span>}
         </span>
         <ul class="flex items-center space-x-6">
           <li class={`border-b ${active("/home")}`}>
