@@ -18,17 +18,65 @@ const Register = () => {
   const [currentImageIndex, setCurrentImageIndex] = createSignal(0);
   const navigate = useNavigate();
 
-  const handleRegister = (e: Event) => {
+  // const handleRegister = (e: Event) => {
+  //   e.preventDefault();
+  //   if (password() === confirmPassword()) {
+  //     alert("Cadastro realizado com sucesso!");
+  //     navigate("/");
+  //   } else {
+  //     alert("As senhas não coincidem!");
+  //   }
+  // };
+
+  const handleRegister = async (e: Event) => {
     e.preventDefault();
-    if (password() === confirmPassword()) {
-      alert("Cadastro realizado com sucesso!");
-      navigate("/");
-    } else {
+
+    if (!email() || !password() || !confirmPassword()) {
+      alert("Preencha todos os campos.");
+      return;
+    }
+
+    if (password() !== confirmPassword()) {
       alert("As senhas não coincidem!");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        "https://academia-unifor-fastapi.onrender.com/auth/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: email().split("@")[0], // apenas para preencher algo
+            email: email(),
+            password: password(),
+            phone: null,
+            address: null,
+            birthDate: null,
+            avatarUrl: null,
+            isAdmin: false,
+            workouts: [],
+          }),
+        }
+      );
+
+      if (response.ok) {
+        alert("Cadastro realizado com sucesso!");
+        navigate("/");
+      } else {
+        const error = await response.json();
+        alert(`Erro: ${error.detail || "Não foi possível cadastrar."}`);
+      }
+    } catch (err) {
+      alert("Erro ao conectar com o servidor.");
+      console.error(err);
     }
   };
 
-  let intervalId: number;
+  let intervalId: ReturnType<typeof setInterval>;
 
   onMount(() => {
     intervalId = setInterval(() => {
