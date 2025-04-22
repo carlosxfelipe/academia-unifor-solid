@@ -30,7 +30,7 @@ export default function ProfilePage() {
       <div class="bg-slate-50 dark:bg-gray-900 rounded-2xl shadow-lg p-8 mb-10 transition-colors">
         <div class="flex flex-col items-center text-center">
           <img
-            src={user.avatarUrl}
+            src={user.avatarUrl || "/avatar.jpg"}
             alt={user.name}
             class="w-28 h-28 rounded-full shadow-md mb-4"
           />
@@ -44,22 +44,30 @@ export default function ProfilePage() {
         </div>
 
         <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 text-gray-700 dark:text-gray-300">
-          <div class="flex items-center">
-            <Mail class="w-5 h-5 mr-2 text-blue-500" />
-            <span>{user.email}</span>
-          </div>
-          <div class="flex items-center">
-            <Phone class="w-5 h-5 mr-2 text-blue-500" />
-            <span>{user.phone}</span>
-          </div>
-          <div class="flex items-center">
-            <MapPin class="w-5 h-5 mr-2 text-blue-500" />
-            <span>{user.address}</span>
-          </div>
-          <div class="flex items-center">
-            <Calendar class="w-5 h-5 mr-2 text-blue-500" />
-            <span>{user.birthDate}</span>
-          </div>
+          {user.email && (
+            <div class="flex items-center">
+              <Mail class="w-5 h-5 mr-2 text-blue-500" />
+              <span>{user.email}</span>
+            </div>
+          )}
+          {user.phone && (
+            <div class="flex items-center">
+              <Phone class="w-5 h-5 mr-2 text-blue-500" />
+              <span>{user.phone}</span>
+            </div>
+          )}
+          {user.address && (
+            <div class="flex items-center">
+              <MapPin class="w-5 h-5 mr-2 text-blue-500" />
+              <span>{user.address}</span>
+            </div>
+          )}
+          {user.birthDate && (
+            <div class="flex items-center">
+              <Calendar class="w-5 h-5 mr-2 text-blue-500" />
+              <span>{user.birthDate}</span>
+            </div>
+          )}
         </div>
       </div>
 
