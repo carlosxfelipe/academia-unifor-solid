@@ -1,6 +1,8 @@
 import { createSignal, onCleanup, onMount } from "solid-js";
 import { useNavigate } from "@solidjs/router";
+import { UniforLogo } from "~/components/UniforLogo";
 import { Mail, Lock } from "lucide-solid";
+import { useIsMobile } from "~/hooks/useIsMobile";
 
 const images = [
   "/001.jpg",
@@ -12,6 +14,8 @@ const images = [
 ];
 
 const Register = () => {
+  const isMobile = useIsMobile();
+
   const [email, setEmail] = createSignal("");
   const [password, setPassword] = createSignal("");
   const [confirmPassword, setConfirmPassword] = createSignal("");
@@ -87,17 +91,22 @@ const Register = () => {
   onCleanup(() => clearInterval(intervalId));
 
   return (
-    <div
-      class="relative flex flex-col items-center justify-center h-screen"
-      style={{
-        "background-image": `url(${images[currentImageIndex()]})`,
-        "background-size": "cover",
-        "background-position": "center",
-        transition: "background-image 1s ease-in-out",
-      }}
-    >
+    <div class="relative flex flex-col items-center justify-center h-screen overflow-hidden">
+      {!isMobile() &&
+        images.map((img, i) => (
+          <div
+            class="absolute inset-0 bg-cover bg-center transition-opacity duration-1000"
+            style={{
+              "background-image": `url(${img})`,
+              opacity: i === currentImageIndex() ? 1 : 0,
+            }}
+          />
+        ))}
       <div class="absolute inset-0 bg-blue-900 opacity-50 z-0"></div>
       <div class="relative p-8 bg-white/70 dark:bg-gray-800/70 border border-gray-300 dark:border-white/40 rounded-xl shadow-xl w-96 backdrop-blur-xl z-10 transition-all duration-300">
+        <div class="flex justify-center mb-4 text-gray-900 dark:text-white">
+          <UniforLogo height={100} color="currentColor" />
+        </div>
         <h2 class="text-2xl mb-6 text-center text-gray-900 dark:text-white">
           Criar nova conta
         </h2>
