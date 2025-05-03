@@ -4,16 +4,22 @@ export function useIsMobile(breakpoint = 480) {
   const [isMobile, setIsMobile] = createSignal(false);
 
   const checkMobile = () => {
-    setIsMobile(window.matchMedia(`(max-width: ${breakpoint}px)`).matches);
+    if (typeof window !== "undefined") {
+      setIsMobile(window.matchMedia(`(max-width: ${breakpoint}px)`).matches);
+    }
   };
 
   onMount(() => {
     checkMobile();
-    window.addEventListener("resize", checkMobile);
+    if (typeof window !== "undefined") {
+      window.addEventListener("resize", checkMobile);
+    }
   });
 
   onCleanup(() => {
-    window.removeEventListener("resize", checkMobile);
+    if (typeof window !== "undefined") {
+      window.removeEventListener("resize", checkMobile);
+    }
   });
 
   return isMobile;
