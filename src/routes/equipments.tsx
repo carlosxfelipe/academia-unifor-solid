@@ -1,13 +1,52 @@
-import { createSignal, createMemo } from "solid-js";
+import { createSignal, createMemo, createResource, For, Show } from "solid-js";
 import Layout from "~/components/Layout";
-import equipmentData from "../../mocks/equipment.json";
+
+async function fetchEquipment() {
+  const res = await fetch(
+    "https://academia-unifor-fastapi.onrender.com/equipment"
+  );
+  if (!res.ok) throw new Error("Erro ao buscar equipamentos");
+  return res.json();
+}
+
+interface Equipment {
+  id: number;
+  category: string;
+  name: string;
+  brand: string;
+  model: string;
+  quantity: number;
+  image: string;
+  operational: boolean;
+}
+
+interface GroupedCategory {
+  category: string;
+  items: Equipment[];
+}
+
+function groupByCategory(data: Equipment[]): GroupedCategory[] {
+  const grouped: Record<string, Equipment[]> = {};
+  data.forEach((item) => {
+    if (!grouped[item.category]) {
+      grouped[item.category] = [];
+    }
+    grouped[item.category].push(item);
+  });
+  return Object.entries(grouped).map(([category, items]) => ({
+    category,
+    items,
+  }));
+}
 
 export default function EquipmentsPage() {
   const [search, setSearch] = createSignal("");
+  const [equipment] = createResource<Equipment[]>(fetchEquipment);
 
   const filteredData = createMemo(() => {
     const query = search().toLowerCase();
-    return equipmentData.gymEquipment
+    const grouped = equipment.loading ? [] : groupByCategory(equipment() || []);
+    return grouped
       .map((category) => ({
         ...category,
         items: category.items.filter((item) =>
@@ -28,41 +67,50 @@ export default function EquipmentsPage() {
           onInput={(e) => setSearch(e.currentTarget.value)}
         />
 
-        {filteredData().map((category) => (
-          <div class="mb-10">
-            <h2 class="text-xl font-semibold mb-4">{category.category}</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {category.items.map((item) => (
-                <div class="border border-gray-300 dark:border-gray-700 rounded-lg p-4 shadow-sm bg-white text-black dark:bg-zinc-900 dark:text-white">
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    class="w-full h-40 object-contain mb-2"
-                    onError={(e) =>
-                      (e.currentTarget.src =
-                        "https://img.icons8.com/ios7/600w/no-image.png")
-                    }
-                  />
-                  <h3 class="text-lg font-bold">{item.name}</h3>
-                  <p class="text-sm">
-                    <strong>Marca:</strong> {item.brand}
-                  </p>
-                  <p class="text-sm">
-                    <strong>Modelo:</strong> {item.model}
-                  </p>
-                  <p class="text-sm">
-                    <strong>Quantidade:</strong> {item.quantity}
-                  </p>
-                  {item.operational === false && (
-                    <span class="inline-block mt-2 text-sm bg-red-500 text-white px-2 py-1 rounded">
-                      Fora de operação
-                    </span>
-                  )}
+        <Show when={!equipment.loading} fallback={<p>Carregando...</p>}>
+          <For each={filteredData()}>
+            {(category) => (
+              <div class="mb-10">
+                <h2 class="text-xl font-semibold mb-4">{category.category}</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <For each={category.items}>
+                    {(item) => (
+                      <div class="border border-gray-300 dark:border-gray-700 rounded-lg p-4 shadow-sm bg-white text-black dark:bg-zinc-900 dark:text-white">
+                        <img
+                          src={
+                            item.image ||
+                            "https://img.icons8.com/ios7/600w/no-image.png"
+                          }
+                          alt={item.name}
+                          class="w-full h-40 object-contain mb-2"
+                          onError={(e) =>
+                            (e.currentTarget.src =
+                              "https://img.icons8.com/ios7/600w/no-image.png")
+                          }
+                        />
+                        <h3 class="text-lg font-bold">{item.name}</h3>
+                        <p class="text-sm">
+                          <strong>Marca:</strong> {item.brand}
+                        </p>
+                        <p class="text-sm">
+                          <strong>Modelo:</strong> {item.model}
+                        </p>
+                        <p class="text-sm">
+                          <strong>Quantidade:</strong> {item.quantity}
+                        </p>
+                        <Show when={!item.operational}>
+                          <span class="inline-block mt-2 text-sm bg-red-500 text-white px-2 py-1 rounded">
+                            Fora de operação
+                          </span>
+                        </Show>
+                      </div>
+                    )}
+                  </For>
                 </div>
-              ))}
-            </div>
-          </div>
-        ))}
+              </div>
+            )}
+          </For>
+        </Show>
       </div>
     </Layout>
   );
