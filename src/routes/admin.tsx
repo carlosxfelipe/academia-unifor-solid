@@ -1,8 +1,41 @@
-import { createEffect, createResource, For, Show } from "solid-js";
+import {
+  createSignal,
+  createEffect,
+  createResource,
+  For,
+  Show,
+  onCleanup,
+} from "solid-js";
 import { useNavigate } from "@solidjs/router";
 import { useUser } from "~/contexts/UserContext";
 import Layout from "~/components/Layout";
 import { API_BASE } from "~/lib/api";
+
+type Exercise = {
+  id: number;
+  name: string;
+  reps: string;
+  notes: string | null;
+};
+
+type Workout = {
+  id: number;
+  name: string;
+  description: string;
+  exercises: Exercise[];
+};
+
+type User = {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  birthDate: string;
+  avatarUrl: string;
+  isAdmin: boolean;
+  workouts: Workout[];
+};
 
 const API_KEY = import.meta.env.VITE_API_KEY;
 
@@ -20,6 +53,25 @@ export default function AdminPage() {
   const { user } = useUser();
   const navigate = useNavigate();
   const [users] = createResource(fetchUsers);
+  const [selectedUser, setSelectedUser] = createSignal<User | null>(null);
+
+  const handleClickOutside = (e: MouseEvent) => {
+    const modal = document.getElementById("user-modal");
+    if (modal && !modal.contains(e.target as Node)) {
+      setSelectedUser(null);
+    }
+  };
+
+  createEffect(() => {
+    if (selectedUser()) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    onCleanup(() =>
+      document.removeEventListener("mousedown", handleClickOutside)
+    );
+  });
 
   createEffect(() => {
     if (!user) {
@@ -30,7 +82,7 @@ export default function AdminPage() {
   });
 
   if (!user || !user.isAdmin) {
-    return null; // evita mostrar a página enquanto redireciona
+    return null;
   }
 
   return (
@@ -55,7 +107,10 @@ export default function AdminPage() {
         <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <For each={users()}>
             {(u) => (
-              <div class="p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-lg dark:shadow-[0_4px_20px_rgba(255,255,255,0.1)] flex flex-col items-center text-center">
+              <div
+                class="p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-lg dark:shadow-[0_4px_20px_rgba(255,255,255,0.1)] flex flex-col items-center text-center"
+                onClick={() => setSelectedUser(u)}
+              >
                 <img
                   src={u.avatarUrl}
                   alt={u.name}
@@ -99,6 +154,58 @@ export default function AdminPage() {
               </div>
             )}
           </For>
+        </div>
+      </Show>
+
+      {/* Modal */}
+      <Show when={selectedUser()}>
+        <div class="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div
+            id="user-modal"
+            class="bg-white dark:bg-gray-900 p-6 rounded-xl max-w-lg w-full relative shadow-xl"
+          >
+            <button
+              class="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold"
+              onClick={() => setSelectedUser(null)}
+            >
+              ×
+            </button>
+            <h2 class="text-xl font-bold text-blue-600 mb-4">
+              {selectedUser()?.name} - Treinos
+            </h2>
+            <Show
+              when={(() => {
+                const user = selectedUser();
+                return (
+                  user &&
+                  Array.isArray(user.workouts) &&
+                  user.workouts.length > 0
+                );
+              })()}
+              fallback={<p>Sem treinos cadastrados.</p>}
+            >
+              <For each={selectedUser()?.workouts}>
+                {(workout) => (
+                  <div class="mb-4">
+                    <h3 class="font-semibold text-blue-500">{workout.name}</h3>
+                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-1">
+                      {workout.description || "Sem descrição"}
+                    </p>
+                    <ul class="list-disc list-inside text-sm text-gray-700 dark:text-gray-200">
+                      <For each={workout.exercises}>
+                        {(ex) => (
+                          <li>
+                            <strong>{ex.name}</strong> - {ex.reps}
+                            {ex.notes && ` (${ex.notes})`}
+                          </li>
+                        )}
+                      </For>
+                    </ul>
+                  </div>
+                )}
+              </For>
+            </Show>
+          </div>
         </div>
       </Show>
     </Layout>
