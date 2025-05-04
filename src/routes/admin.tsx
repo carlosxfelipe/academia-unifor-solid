@@ -10,6 +10,7 @@ import { useNavigate } from "@solidjs/router";
 import { useUser } from "~/contexts/UserContext";
 import Layout from "~/components/Layout";
 import { API_BASE } from "~/lib/api";
+import { getRandomColor } from "~/lib/utils";
 
 type Exercise = {
   id: number;
@@ -111,11 +112,23 @@ export default function AdminPage() {
                 class="p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-lg dark:shadow-[0_4px_20px_rgba(255,255,255,0.1)] flex flex-col items-center text-center"
                 onClick={() => setSelectedUser(u)}
               >
-                <img
-                  src={u.avatarUrl}
-                  alt={u.name}
-                  class="w-20 h-20 rounded-full border-4 border-blue-500 shadow mb-3"
-                />
+                <Show
+                  when={u.avatarUrl}
+                  fallback={
+                    <div
+                      class="w-20 h-20 rounded-full flex items-center justify-center text-white font-bold text-xl mb-3 shadow"
+                      style={`background-color: ${getRandomColor(u.id)}`}
+                    >
+                      {u.name.charAt(0).toUpperCase()}
+                    </div>
+                  }
+                >
+                  <img
+                    src={u.avatarUrl}
+                    alt={u.name}
+                    class="w-20 h-20 rounded-full border-4 border-blue-500 shadow mb-3"
+                  />
+                </Show>
                 <h2 class="text-lg font-semibold text-blue-600">{u.name}</h2>
                 <p class="text-sm text-gray-500 dark:text-gray-300 mb-2">
                   {u.email}
