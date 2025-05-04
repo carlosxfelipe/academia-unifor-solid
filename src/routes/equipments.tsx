@@ -45,7 +45,10 @@ export default function EquipmentsPage() {
 
   const filteredData = createMemo(() => {
     const query = search().toLowerCase();
-    const grouped = equipment.loading ? [] : groupByCategory(equipment() || []);
+    const rawData = equipment();
+    if (!rawData) return [];
+
+    const grouped = groupByCategory(rawData);
     return grouped
       .map((category) => ({
         ...category,
@@ -67,8 +70,18 @@ export default function EquipmentsPage() {
           onInput={(e) => setSearch(e.currentTarget.value)}
         />
 
-        <Show when={!equipment.loading} fallback={<p>Carregando...</p>}>
-          <For each={filteredData()}>
+        <Show
+          when={equipment()}
+          fallback={
+            <div class="min-h-[500px] flex items-center justify-center">
+              <p class="text-gray-500 dark:text-gray-400">Carregando...</p>
+            </div>
+          }
+        >
+          <For
+            each={filteredData()}
+            fallback={<p>Nenhum equipamento encontrado.</p>}
+          >
             {(category) => (
               <div class="mb-10">
                 <h2 class="text-xl font-semibold mb-4">{category.category}</h2>
