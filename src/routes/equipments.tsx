@@ -60,7 +60,7 @@ export default function EquipmentsPage() {
   });
 
   return (
-    <Layout fluid>
+    <Layout>
       <div class="p-4">
         <h1 class="text-2xl font-bold mb-4">Equipamentos</h1>
         <input
@@ -73,8 +73,23 @@ export default function EquipmentsPage() {
         <Show
           when={equipment()}
           fallback={
-            <div class="min-h-[500px] flex items-center justify-center">
-              <p class="text-gray-500 dark:text-gray-400">Carregando...</p>
+            <div class="mb-10">
+              <h2 class="text-xl font-semibold mb-4">
+                Carregando equipamentos...
+              </h2>
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <For each={Array(6)}>
+                  {() => (
+                    <div class="border border-gray-300 dark:border-gray-700 rounded-lg p-4 shadow-sm bg-white dark:bg-zinc-900 animate-pulse">
+                      <div class="w-full h-40 bg-gray-300 dark:bg-gray-700 mb-2 rounded" />
+                      <div class="h-4 bg-gray-300 dark:bg-gray-700 rounded w-3/4 mb-2" />
+                      <div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-full mb-1" />
+                      <div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-full mb-1" />
+                      <div class="h-3 bg-gray-200 dark:bg-gray-600 rounded w-1/2" />
+                    </div>
+                  )}
+                </For>
+              </div>
             </div>
           }
         >
