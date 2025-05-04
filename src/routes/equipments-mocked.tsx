@@ -1,6 +1,6 @@
 import { createSignal, createMemo } from "solid-js";
 import Layout from "~/components/Layout";
-import equipmentData from "../../../mocks/equipment.json";
+import equipmentData from "../../mocks/equipment.json";
 
 export default function EquipmentsPage() {
   const [search, setSearch] = createSignal("");
