@@ -55,7 +55,7 @@ export default function AdminPage() {
         <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <For each={users()}>
             {(u) => (
-              <div class="p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-lg flex flex-col items-center text-center">
+              <div class="p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-lg dark:shadow-[0_4px_20px_rgba(255,255,255,0.1)] flex flex-col items-center text-center">
                 <img
                   src={u.avatarUrl}
                   alt={u.name}
@@ -87,7 +87,7 @@ export default function AdminPage() {
                           class={`px-2 py-1 rounded-full text-xs font-bold ${
                             u.isAdmin
                               ? "bg-green-100 text-green-700"
-                              : "bg-gray-200 text-gray-600"
+                              : "bg-yellow-100 text-yellow-700"
                           }`}
                         >
                           {u.isAdmin ? "Sim" : "Não"}
