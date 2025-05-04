@@ -3,6 +3,7 @@ import { useNavigate } from "@solidjs/router";
 import { UniforLogo } from "~/components/UniforLogo";
 import { Mail, Lock } from "lucide-solid";
 import { useIsMobile } from "~/hooks/useIsMobile";
+import { API_BASE } from "~/lib/api";
 
 const images = [
   "/001.jpg",
@@ -46,26 +47,23 @@ const Register = () => {
     }
 
     try {
-      const response = await fetch(
-        "https://academia-unifor-fastapi.onrender.com/auth/register",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name: email().split("@")[0], // apenas para preencher algo
-            email: email(),
-            password: password(),
-            phone: null,
-            address: null,
-            birthDate: null,
-            avatarUrl: null,
-            isAdmin: false,
-            workouts: [],
-          }),
-        }
-      );
+      const response = await fetch(`${API_BASE}/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: email().split("@")[0], // apenas para preencher algo
+          email: email(),
+          password: password(),
+          phone: null,
+          address: null,
+          birthDate: null,
+          avatarUrl: null,
+          isAdmin: false,
+          workouts: [],
+        }),
+      });
 
       if (response.ok) {
         alert("Cadastro realizado com sucesso!");

@@ -5,6 +5,7 @@ import { UniforLogo } from "~/components/UniforLogo";
 // import users from "../../mocks/users.json";
 import { useUser } from "~/contexts/UserContext";
 import { useIsMobile } from "~/hooks/useIsMobile";
+import { API_BASE } from "~/lib/api";
 
 const images = [
   "/001.jpg",
@@ -46,19 +47,16 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch(
-        "https://academia-unifor-fastapi.onrender.com/auth/login",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: username(),
-            password: password(),
-          }),
-        }
-      );
+      const response = await fetch(`${API_BASE}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: username(),
+          password: password(),
+        }),
+      });
 
       if (response.ok) {
         const user = await response.json();

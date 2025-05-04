@@ -1,10 +1,9 @@
 import { createSignal, createMemo, createResource, For, Show } from "solid-js";
 import Layout from "~/components/Layout";
+import { API_BASE } from "~/lib/api";
 
 async function fetchEquipment() {
-  const res = await fetch(
-    "https://academia-unifor-fastapi.onrender.com/equipment"
-  );
+  const res = await fetch(`${API_BASE}/equipment`);
   if (!res.ok) throw new Error("Erro ao buscar equipamentos");
   return res.json();
 }
