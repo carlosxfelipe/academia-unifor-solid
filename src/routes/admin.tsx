@@ -55,6 +55,18 @@ export default function AdminPage() {
   const navigate = useNavigate();
   const [users] = createResource(fetchUsers);
   const [selectedUser, setSelectedUser] = createSignal<User | null>(null);
+  const [searchTerm, setSearchTerm] = createSignal("");
+  const filteredUsers = (): User[] => {
+    const term = searchTerm().toLowerCase();
+    const allUsers = users() as User[] | undefined;
+    return (
+      allUsers?.filter(
+        (u: User) =>
+          u.name.toLowerCase().includes(term) ||
+          u.email.toLowerCase().includes(term)
+      ) || []
+    );
+  };
 
   const handleClickOutside = (e: MouseEvent) => {
     const modal = document.getElementById("user-modal");
@@ -105,8 +117,16 @@ export default function AdminPage() {
           <p class="text-center mt-6 text-red-500">Erro ao carregar usuários</p>
         }
       >
+        <div class="mt-6 flex justify-center">
+          <input
+            type="text"
+            placeholder="Buscar por nome ou e-mail..."
+            class="mb-6 w-full max-w-md px-4 py-2 rounded-full border border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white focus:outline-none"
+            onInput={(e) => setSearchTerm(e.currentTarget.value)}
+          />
+        </div>
         <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <For each={users()}>
+          <For each={filteredUsers()}>
             {(u) => (
               <div
                 class="p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-lg dark:shadow-[0_4px_20px_rgba(255,255,255,0.1)] flex flex-col items-center text-center"
