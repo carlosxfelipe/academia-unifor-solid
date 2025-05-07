@@ -1,8 +1,6 @@
 import { createSignal, Show } from "solid-js";
 import { Send, MessageCircle } from "lucide-solid";
 
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-
 export default function FloatingChat() {
   const [open, setOpen] = createSignal(false);
   const [messages, setMessages] = createSignal([
@@ -24,12 +22,17 @@ export default function FloatingChat() {
 
     try {
       const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-pro:generateContent?key=${GEMINI_API_KEY}`,
+        "https://academia-unifor-fastapi.onrender.com/gemini/chat",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            contents: [{ parts: [{ text: trimmed }] }],
+            contents: [
+              {
+                role: "user",
+                parts: [{ text: trimmed }],
+              },
+            ],
           }),
         }
       );
