@@ -2,8 +2,6 @@ import { createSignal } from "solid-js";
 import { Send } from "lucide-solid";
 import Layout from "~/components/Layout";
 
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-
 export default function ChatPage() {
   const [messages, setMessages] = createSignal([
     {
@@ -24,7 +22,7 @@ export default function ChatPage() {
 
     try {
       const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
+        "https://academia-unifor-fastapi.onrender.com/gemini/chat",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
