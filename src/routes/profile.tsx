@@ -1,6 +1,9 @@
+import { createSignal, Show } from "solid-js";
 import Layout from "~/components/Layout";
 import { useUser } from "~/contexts/UserContext";
 import { Mail, Phone, MapPin, Calendar, ShieldCheck } from "lucide-solid";
+import { API_BASE } from "~/lib/api";
+import { jsonHeaders } from "~/lib/authHeaders";
 
 type Exercise = {
   name: string;
@@ -15,7 +18,48 @@ type Workout = {
 };
 
 export default function ProfilePage() {
-  const { user } = useUser();
+  const { user, setUser } = useUser();
+  const [isFormOpen, setIsFormOpen] = createSignal(false);
+
+  function formatDateForInput(date: string): string {
+    if (!date) return "";
+    if (date.includes("-")) return date; // já está no formato ISO
+    const [day, month, year] = date.split("/");
+    return `${year}-${month}-${day}`;
+  }
+
+  const [formData, setFormData] = createSignal({
+    name: user?.name || "",
+    email: user?.email || "",
+    password: user?.password || "",
+    phone: user?.phone || "",
+    address: user?.address || "",
+    birthDate: formatDateForInput(user?.birthDate || ""),
+    avatarUrl: user?.avatarUrl || "",
+  });
+
+  async function handleSubmit(e: Event) {
+    e.preventDefault();
+
+    const raw = formData();
+    const payload: Partial<typeof raw> = { ...raw };
+
+    if (!payload.password) delete payload.password;
+
+    const res = await fetch(`${API_BASE}/users/${user?.id}`, {
+      method: "PUT",
+      headers: jsonHeaders,
+      body: JSON.stringify(payload),
+    });
+
+    if (res.ok) {
+      const updated = await res.json();
+      setUser(updated);
+      setIsFormOpen(false);
+    } else {
+      alert("Erro ao atualizar dados");
+    }
+  }
 
   if (!user) {
     return (
@@ -41,6 +85,12 @@ export default function ProfilePage() {
               Administrador
             </div>
           )}
+          <button
+            class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            onClick={() => setIsFormOpen(true)}
+          >
+            Editar Perfil
+          </button>
         </div>
 
         <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 text-gray-700 dark:text-gray-300">
@@ -102,6 +152,110 @@ export default function ProfilePage() {
           </p>
         )}
       </div>
+
+      <Show when={isFormOpen()}>
+        <div
+          class="fixed top-0 left-0 w-full h-full bg-[rgba(0,0,0,0.5)] flex items-center justify-center z-50"
+          onClick={() => setIsFormOpen(false)}
+        >
+          <form
+            class="bg-white dark:bg-zinc-900 p-6 rounded shadow-md w-full max-w-md"
+            onClick={(e) => e.stopPropagation()}
+            onSubmit={handleSubmit}
+          >
+            <h2 class="text-xl font-bold mb-4">Editar Perfil</h2>
+
+            <div class="space-y-3">
+              <input
+                class="w-full border px-3 py-2 rounded"
+                placeholder="Nome"
+                value={formData().name}
+                onInput={(e) =>
+                  setFormData({ ...formData(), name: e.currentTarget.value })
+                }
+              />
+              <input
+                class="w-full border px-3 py-2 rounded"
+                placeholder="Email"
+                value={formData().email}
+                onInput={(e) =>
+                  setFormData({ ...formData(), email: e.currentTarget.value })
+                }
+              />
+              <input
+                class="w-full border px-3 py-2 rounded"
+                type="password"
+                placeholder="Nova senha"
+                value={formData().password || ""}
+                onInput={(e) =>
+                  setFormData({
+                    ...formData(),
+                    password: e.currentTarget.value,
+                  })
+                }
+              />
+              <input
+                class="w-full border px-3 py-2 rounded"
+                placeholder="Telefone"
+                value={formData().phone}
+                onInput={(e) =>
+                  setFormData({ ...formData(), phone: e.currentTarget.value })
+                }
+              />
+              <input
+                class="w-full border px-3 py-2 rounded"
+                placeholder="Endereço"
+                value={formData().address}
+                onInput={(e) =>
+                  setFormData({
+                    ...formData(),
+                    address: e.currentTarget.value,
+                  })
+                }
+              />
+              <input
+                class="w-full border px-3 py-2 rounded"
+                type="date"
+                value={formData().birthDate}
+                onInput={(e) =>
+                  setFormData({
+                    ...formData(),
+                    birthDate: e.currentTarget.value,
+                  })
+                }
+              />
+              <input
+                class="w-full border px-3 py-2 rounded"
+                type="url"
+                placeholder="URL da imagem de perfil"
+                value={formData().avatarUrl}
+                onInput={(e) =>
+                  setFormData({
+                    ...formData(),
+                    avatarUrl: e.currentTarget.value,
+                  })
+                }
+              />
+            </div>
+
+            <div class="flex justify-end gap-2 mt-4">
+              <button
+                type="button"
+                class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                onClick={() => setIsFormOpen(false)}
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
+                Salvar
+              </button>
+            </div>
+          </form>
+        </div>
+      </Show>
     </Layout>
   );
 }
