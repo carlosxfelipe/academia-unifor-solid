@@ -54,14 +54,23 @@ export function UserProvider(props: { children: JSX.Element }) {
   );
 }
 
+// export function useUser() {
+//   const context = useContext(UserContext);
+//   if (!context) {
+//     throw new Error("useUser must be used inside a UserProvider");
+//   }
+
+//   return {
+//     user: context.user(),
+//     setUser: context.setUser,
+//   };
+// }
+
 export function useUser() {
   const context = useContext(UserContext);
   if (!context) {
     throw new Error("useUser must be used inside a UserProvider");
   }
 
-  return {
-    user: context.user(),
-    setUser: context.setUser,
-  };
+  return context;
 }

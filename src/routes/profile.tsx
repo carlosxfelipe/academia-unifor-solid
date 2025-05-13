@@ -1,4 +1,4 @@
-import { createSignal, Show } from "solid-js";
+import { createEffect, createSignal, Show } from "solid-js";
 import Layout from "~/components/Layout";
 import { useUser } from "~/contexts/UserContext";
 import { Mail, Phone, MapPin, Calendar, ShieldCheck } from "lucide-solid";
@@ -29,13 +29,13 @@ export default function ProfilePage() {
   }
 
   const [formData, setFormData] = createSignal({
-    name: user?.name || "",
-    email: user?.email || "",
-    password: user?.password || "",
-    phone: user?.phone || "",
-    address: user?.address || "",
-    birthDate: formatDateForInput(user?.birthDate || ""),
-    avatarUrl: user?.avatarUrl || "",
+    name: user()?.name || "",
+    email: user()?.email || "",
+    password: "",
+    phone: user()?.phone || "",
+    address: user()?.address || "",
+    birthDate: formatDateForInput(user()?.birthDate || ""),
+    avatarUrl: user()?.avatarUrl || "",
   });
 
   async function handleSubmit(e: Event) {
@@ -46,7 +46,7 @@ export default function ProfilePage() {
 
     if (!payload.password) delete payload.password;
 
-    const res = await fetch(`${API_BASE}/users/${user?.id}`, {
+    const res = await fetch(`${API_BASE}/users/${user()?.id}`, {
       method: "PUT",
       headers: jsonHeaders,
       body: JSON.stringify(payload),
@@ -61,7 +61,24 @@ export default function ProfilePage() {
     }
   }
 
-  if (!user) {
+  createEffect(() => {
+    if (isFormOpen()) {
+      const u = user();
+      if (u !== null) {
+        setFormData({
+          name: u.name || "",
+          email: u.email || "",
+          password: "",
+          phone: u.phone || "",
+          address: u.address || "",
+          birthDate: formatDateForInput(u.birthDate || ""),
+          avatarUrl: u.avatarUrl || "",
+        });
+      }
+    }
+  });
+
+  if (!user()) {
     return (
       <Layout>
         <p>Usuário não autenticado</p>
@@ -71,87 +88,93 @@ export default function ProfilePage() {
 
   return (
     <Layout>
-      <div class="bg-slate-50 dark:bg-gray-900 rounded-2xl shadow-lg p-8 mb-10 transition-colors">
-        <div class="flex flex-col items-center text-center">
-          <img
-            src={user.avatarUrl || "/avatar.jpg"}
-            alt={user.name}
-            class="w-28 h-28 rounded-full shadow-md mb-4"
-          />
-          <h2 class="text-2xl font-bold mb-1">{user.name}</h2>
-          {user.isAdmin && (
-            <div class="flex items-center text-blue-500 text-sm font-semibold mt-1">
-              <ShieldCheck class="w-4 h-4 mr-1" />
-              Administrador
-            </div>
-          )}
-          <button
-            class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            onClick={() => setIsFormOpen(true)}
-          >
-            Editar Perfil
-          </button>
-        </div>
+      <Show when={user()}>
+        {(u) => (
+          <>
+            <div class="bg-slate-50 dark:bg-gray-900 rounded-2xl shadow-lg p-8 mb-10 transition-colors">
+              <div class="flex flex-col items-center text-center">
+                <img
+                  src={u().avatarUrl || "/avatar.jpg"}
+                  alt={u().name}
+                  class="w-28 h-28 rounded-full shadow-md mb-4"
+                />
+                <h2 class="text-2xl font-bold mb-1">{u().name}</h2>
+                {u().isAdmin && (
+                  <div class="flex items-center text-blue-500 text-sm font-semibold mt-1">
+                    <ShieldCheck class="w-4 h-4 mr-1" />
+                    Administrador
+                  </div>
+                )}
+                <button
+                  class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                  onClick={() => setIsFormOpen(true)}
+                >
+                  Editar Perfil
+                </button>
+              </div>
 
-        <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 text-gray-700 dark:text-gray-300">
-          {user.email && (
-            <div class="flex items-center">
-              <Mail class="w-5 h-5 mr-2 text-blue-500" />
-              <span>{user.email}</span>
+              <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 text-gray-700 dark:text-gray-300">
+                {u().email && (
+                  <div class="flex items-center">
+                    <Mail class="w-5 h-5 mr-2 text-blue-500" />
+                    <span>{u().email}</span>
+                  </div>
+                )}
+                {u().phone && (
+                  <div class="flex items-center">
+                    <Phone class="w-5 h-5 mr-2 text-blue-500" />
+                    <span>{u().phone}</span>
+                  </div>
+                )}
+                {u().address && (
+                  <div class="flex items-center">
+                    <MapPin class="w-5 h-5 mr-2 text-blue-500" />
+                    <span>{u().address}</span>
+                  </div>
+                )}
+                {u().birthDate && (
+                  <div class="flex items-center">
+                    <Calendar class="w-5 h-5 mr-2 text-blue-500" />
+                    <span>{u().birthDate}</span>
+                  </div>
+                )}
+              </div>
             </div>
-          )}
-          {user.phone && (
-            <div class="flex items-center">
-              <Phone class="w-5 h-5 mr-2 text-blue-500" />
-              <span>{user.phone}</span>
-            </div>
-          )}
-          {user.address && (
-            <div class="flex items-center">
-              <MapPin class="w-5 h-5 mr-2 text-blue-500" />
-              <span>{user.address}</span>
-            </div>
-          )}
-          {user.birthDate && (
-            <div class="flex items-center">
-              <Calendar class="w-5 h-5 mr-2 text-blue-500" />
-              <span>{user.birthDate}</span>
-            </div>
-          )}
-        </div>
-      </div>
 
-      <div class="space-y-8">
-        {user.workouts?.length > 0 ? (
-          user.workouts.map((workout: Workout) => (
-            <div class="bg-slate-50 dark:bg-gray-900 p-6 rounded-xl shadow-md transition-colors">
-              <h3 class="text-2xl font-semibold text-blue-600 dark:text-blue-400 mb-2">
-                {workout.name}
-              </h3>
-              <p class="text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
-                {workout.description}
-              </p>
-              <ul class="list-disc list-inside space-y-3 text-base text-gray-800 dark:text-gray-200">
-                {workout.exercises.map((ex) => (
-                  <li>
-                    <strong>{ex.name}</strong>
-                    {ex.reps && ` — ${ex.reps}`}
-                    {ex.notes && (
-                      <p class="text-sm text-gray-500 dark:text-gray-400 ml-2 mt-1">
-                        {ex.notes}
-                      </p>
-                    )}
-                  </li>
-                ))}
-              </ul>
+            <div class="space-y-8">
+              {u().workouts?.length > 0 ? (
+                u().workouts.map((workout: Workout) => (
+                  <div class="bg-slate-50 dark:bg-gray-900 p-6 rounded-xl shadow-md transition-colors">
+                    <h3 class="text-2xl font-semibold text-blue-600 dark:text-blue-400 mb-2">
+                      {workout.name}
+                    </h3>
+                    <p class="text-base text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                      {workout.description}
+                    </p>
+                    <ul class="list-disc list-inside space-y-3 text-base text-gray-800 dark:text-gray-200">
+                      {workout.exercises.map((ex) => (
+                        <li>
+                          <strong>{ex.name}</strong>
+                          {ex.reps && ` — ${ex.reps}`}
+                          {ex.notes && (
+                            <p class="text-sm text-gray-500 dark:text-gray-400 ml-2 mt-1">
+                              {ex.notes}
+                            </p>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))
+              ) : (
+                <p class="text-center text-gray-500 text-lg">
+                  Nenhum treino cadastrado.
+                </p>
+              )}
             </div>
-          ))
-        ) : (
-          <p class="text-center text-gray-500 text-lg">
-            Nenhum treino cadastrado.
-          </p>
+          </>
         )}
-      </div>
+      </Show>
 
       <Show when={isFormOpen()}>
         <div
