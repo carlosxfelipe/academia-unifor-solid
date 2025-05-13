@@ -1,15 +1,19 @@
 import { createEffect, createSignal, Show } from "solid-js";
 import Layout from "~/components/Layout";
 import { useUser } from "~/contexts/UserContext";
-import { Mail, Phone, MapPin, Calendar, ShieldCheck } from "lucide-solid";
+import {
+  Calendar,
+  Eye,
+  EyeOff,
+  Mail,
+  MapPin,
+  Pencil,
+  Phone,
+  ShieldCheck,
+} from "lucide-solid";
 import { API_BASE } from "~/lib/api";
 import { jsonHeaders } from "~/lib/authHeaders";
-
-function formatDateForDisplay(isoDate: string): string {
-  if (!isoDate) return "";
-  const [year, month, day] = isoDate.split("-");
-  return `${day}/${month}/${year}`;
-}
+import { formatDateForDisplay, formatDateForInput } from "~/lib/dateUtils";
 
 type Exercise = {
   name: string;
@@ -26,13 +30,7 @@ type Workout = {
 export default function ProfilePage() {
   const { user, setUser } = useUser();
   const [isFormOpen, setIsFormOpen] = createSignal(false);
-
-  function formatDateForInput(date: string): string {
-    if (!date) return "";
-    if (date.includes("-")) return date; // já está no formato ISO
-    const [day, month, year] = date.split("/");
-    return `${year}-${month}-${day}`;
-  }
+  const [showPassword, setShowPassword] = createSignal(false);
 
   const [formData, setFormData] = createSignal({
     name: user()?.name || "",
@@ -97,7 +95,14 @@ export default function ProfilePage() {
       <Show when={user()}>
         {(u) => (
           <>
-            <div class="bg-slate-50 dark:bg-gray-900 rounded-2xl shadow-lg p-8 mb-10 transition-colors">
+            <div class="bg-slate-50 dark:bg-gray-900 rounded-2xl shadow-lg p-8 mb-10 transition-colors relative">
+              <button
+                class="absolute top-2 right-2 p-2 rounded-full bg-white dark:bg-zinc-800 shadow hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors"
+                onClick={() => setIsFormOpen(true)}
+                aria-label="Editar perfil"
+              >
+                <Pencil class="w-5 h-5 text-blue-600" />
+              </button>
               <div class="flex flex-col items-center text-center">
                 <img
                   src={u().avatarUrl || "/avatar.jpg"}
@@ -111,12 +116,6 @@ export default function ProfilePage() {
                     Administrador
                   </div>
                 )}
-                <button
-                  class="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                  onClick={() => setIsFormOpen(true)}
-                >
-                  Editar Perfil
-                </button>
               </div>
 
               <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 text-gray-700 dark:text-gray-300">
@@ -211,18 +210,32 @@ export default function ProfilePage() {
                   setFormData({ ...formData(), email: e.currentTarget.value })
                 }
               />
-              <input
-                class="w-full border px-3 py-2 rounded"
-                type="password"
-                placeholder="Nova senha"
-                value={formData().password || ""}
-                onInput={(e) =>
-                  setFormData({
-                    ...formData(),
-                    password: e.currentTarget.value,
-                  })
-                }
-              />
+              <div class="relative">
+                <input
+                  class="w-full border px-3 py-2 rounded pr-10"
+                  type={showPassword() ? "text" : "password"}
+                  placeholder="Nova senha"
+                  value={formData().password || ""}
+                  onInput={(e) =>
+                    setFormData({
+                      ...formData(),
+                      password: e.currentTarget.value,
+                    })
+                  }
+                />
+                <button
+                  type="button"
+                  class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  onClick={() => setShowPassword(!showPassword())}
+                  aria-label="Alternar visibilidade da senha"
+                >
+                  {showPassword() ? (
+                    <EyeOff class="w-5 h-5" />
+                  ) : (
+                    <Eye class="w-5 h-5" />
+                  )}
+                </button>
+              </div>
               <input
                 class="w-full border px-3 py-2 rounded"
                 placeholder="Telefone"

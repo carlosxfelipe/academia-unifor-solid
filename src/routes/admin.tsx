@@ -11,6 +11,7 @@ import { useUser } from "~/contexts/UserContext";
 import Layout from "~/components/Layout";
 import { API_BASE } from "~/lib/api";
 import { getRandomColor } from "~/lib/utils";
+import { formatDateForDisplay } from "~/lib/dateUtils";
 
 type Exercise = {
   id: number;
@@ -167,7 +168,7 @@ export default function AdminPage() {
                     </tr>
                     <tr>
                       <td class="font-medium">Nascimento:</td>
-                      <td>{u.birthDate || "-"}</td>
+                      <td>{formatDateForDisplay(u.birthDate) || "-"}</td>
                     </tr>
                     <tr>
                       <td class="font-medium">Admin:</td>
