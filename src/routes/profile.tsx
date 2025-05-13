@@ -5,6 +5,12 @@ import { Mail, Phone, MapPin, Calendar, ShieldCheck } from "lucide-solid";
 import { API_BASE } from "~/lib/api";
 import { jsonHeaders } from "~/lib/authHeaders";
 
+function formatDateForDisplay(isoDate: string): string {
+  if (!isoDate) return "";
+  const [year, month, day] = isoDate.split("-");
+  return `${day}/${month}/${year}`;
+}
+
 type Exercise = {
   name: string;
   reps?: string;
@@ -135,7 +141,7 @@ export default function ProfilePage() {
                 {u().birthDate && (
                   <div class="flex items-center">
                     <Calendar class="w-5 h-5 mr-2 text-blue-500" />
-                    <span>{u().birthDate}</span>
+                    <span>{formatDateForDisplay(u().birthDate)}</span>
                   </div>
                 )}
               </div>
@@ -233,17 +239,6 @@ export default function ProfilePage() {
                   setFormData({
                     ...formData(),
                     address: e.currentTarget.value,
-                  })
-                }
-              />
-              <input
-                class="w-full border px-3 py-2 rounded"
-                type="date"
-                value={formData().birthDate}
-                onInput={(e) =>
-                  setFormData({
-                    ...formData(),
-                    birthDate: e.currentTarget.value,
                   })
                 }
               />
