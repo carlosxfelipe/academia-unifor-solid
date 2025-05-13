@@ -301,7 +301,7 @@ export default function EquipmentsPage() {
                     setFormData({});
                     setIsFormOpen(false);
                   }}
-                  class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                  class="px-4 py-2 bg-gray-300 dark:bg-zinc-700 text-black dark:text-white rounded hover:bg-gray-400 dark:hover:bg-zinc-600"
                 >
                   Cancelar
                 </button>

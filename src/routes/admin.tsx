@@ -12,6 +12,7 @@ import Layout from "~/components/Layout";
 import { API_BASE } from "~/lib/api";
 import { getRandomColor } from "~/lib/utils";
 import { formatDateForDisplay } from "~/lib/dateUtils";
+import { authHeaders, jsonHeaders } from "~/lib/authHeaders";
 
 type Exercise = {
   id: number;
@@ -39,20 +40,26 @@ type User = {
   workouts: Workout[];
 };
 
-const API_KEY = import.meta.env.VITE_API_KEY;
-
 const fetchUsers = async () => {
   const res = await fetch(`${API_BASE}/users`, {
-    headers: {
-      "x-api-key": API_KEY,
-    },
+    headers: authHeaders,
   });
   if (!res.ok) throw new Error("Erro ao buscar usuários");
   return res.json();
 };
 
+const removeAdminStatus = async (userId: number) => {
+  const res = await fetch(`${API_BASE}/users/${userId}`, {
+    method: "PUT",
+    headers: jsonHeaders,
+    body: JSON.stringify({ isAdmin: false }),
+  });
+  if (!res.ok) throw new Error("Erro ao atualizar o status de admin");
+  return res.json();
+};
+
 export default function AdminPage() {
-  const { user } = useUser();
+  const { user, setUser } = useUser();
   const navigate = useNavigate();
   const [users] = createResource(fetchUsers);
   const [selectedUser, setSelectedUser] = createSignal<User | null>(null);
@@ -105,6 +112,32 @@ export default function AdminPage() {
       <h1 class="text-2xl font-bold text-center text-blue-600">
         Painel do Administrador
       </h1>
+      <div class="mt-4 flex justify-center">
+        <button
+          class="bg-red-600 text-white px-6 py-2 rounded-full hover:bg-red-700 transition"
+          onClick={async () => {
+            const confirmed = window.confirm(
+              "Tem certeza que deseja deixar de ser administrador? Essa ação não poderá ser desfeita."
+            );
+            if (!confirmed) return;
+
+            const currentUser = user();
+            if (!currentUser) return;
+
+            try {
+              const updatedUser = await removeAdminStatus(currentUser.id);
+              setUser(updatedUser);
+              alert("Você deixou de ser administrador.");
+              navigate("/home", { replace: true });
+            } catch (err) {
+              alert("Erro ao remover status de admin.");
+              console.error(err);
+            }
+          }}
+        >
+          Deixar de ser Admin
+        </button>
+      </div>
       <p class="text-center mt-4 text-gray-700 dark:text-gray-300">
         Bem-vindo, {user()?.name}!
       </p>
