@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from "@solidjs/router";
 import { Home, User, LogOut, Dumbbell, Settings } from "lucide-solid";
 import { UniforLogo } from "./UniforLogo";
-import { useUser } from "~/contexts/UserContext";
+import { User as UserType, useUser } from "~/contexts/UserContext";
 import { useIsMobile } from "~/hooks/useIsMobile";
 
 export default function Navbar() {
@@ -9,7 +9,17 @@ export default function Navbar() {
 
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, setUser } = useUser();
+
+  let user: () => UserType | null = () => null;
+  let setUser: (user: UserType | null) => void = () => {};
+
+  try {
+    const context = useUser();
+    user = context.user;
+    setUser = context.setUser;
+  } catch (e) {
+    // Contexto não está disponível (página pública como /login, /register)
+  }
 
   const active = (path: string) =>
     path === location.pathname
@@ -58,7 +68,7 @@ export default function Navbar() {
               <span class="hidden sm:inline">Sair</span>
             </button>
           </li>
-          {user?.isAdmin && (
+          {user()?.isAdmin && (
             <li class={`border-b ${active("/admin")}`}>
               <a href="/admin" class="flex items-center gap-1">
                 <Settings size={18} />

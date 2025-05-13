@@ -87,14 +87,15 @@ export default function AdminPage() {
   });
 
   createEffect(() => {
-    if (!user) {
+    const currentUser = user();
+    if (!currentUser) {
       navigate("/login", { replace: true });
-    } else if (!user.isAdmin) {
+    } else if (!currentUser.isAdmin) {
       navigate("/home", { replace: true });
     }
   });
 
-  if (!user || !user.isAdmin) {
+  if (!user() || !user()?.isAdmin) {
     return null;
   }
 
@@ -104,7 +105,7 @@ export default function AdminPage() {
         Painel do Administrador
       </h1>
       <p class="text-center mt-4 text-gray-700 dark:text-gray-300">
-        Bem-vindo, {user.name}!
+        Bem-vindo, {user()?.name}!
       </p>
 
       <Show when={users.loading}>

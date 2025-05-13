@@ -6,7 +6,7 @@ import {
   JSX,
 } from "solid-js";
 
-type User = {
+export type User = {
   id: number;
   name: string;
   email: string;

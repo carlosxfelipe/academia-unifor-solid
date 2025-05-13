@@ -123,7 +123,7 @@ export default function EquipmentsPage() {
           onInput={(e) => setSearch(e.currentTarget.value)}
         />
 
-        <Show when={user?.isAdmin}>
+        <Show when={user()?.isAdmin}>
           <button
             class="mb-6 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
             onClick={() => openForm()}
@@ -175,7 +175,7 @@ export default function EquipmentsPage() {
                             </span>
                           </Show>
 
-                          <Show when={user?.isAdmin}>
+                          <Show when={user()?.isAdmin}>
                             <div class="flex gap-2 mt-2">
                               <button
                                 class="text-sm text-yellow-500 hover:underline"
