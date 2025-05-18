@@ -218,46 +218,48 @@ export default function AdminPage() {
                     <tr>
                       <td class="font-medium">Admin:</td>
                       <td>
-                        <span
-                          class={`px-2 py-1 rounded-full text-xs font-bold ${
-                            u.isAdmin
-                              ? "bg-green-100 text-green-700"
-                              : "bg-yellow-100 text-yellow-700"
-                          }`}
-                        >
-                          {u.isAdmin ? "Sim" : "Não"}
-                        </span>
+                        <div class="flex items-center gap-3">
+                          <span
+                            class={`px-2 py-1 rounded-full text-xs font-bold ${
+                              u.isAdmin
+                                ? "bg-green-100 text-green-700"
+                                : "bg-yellow-100 text-yellow-700"
+                            }`}
+                          >
+                            {u.isAdmin ? "Sim" : "Não"}
+                          </span>
 
-                        {/* Switch para alterar status de admin */}
-                        <div class="mt-2 flex items-center gap-2">
-                          <label class="relative inline-flex items-center cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={u.isAdmin}
-                              onChange={async (e) => {
-                                try {
-                                  const updated = await toggleAdminStatus(
-                                    u.id,
-                                    e.currentTarget.checked
-                                  );
+                          {/* Switch para alterar status de admin */}
+                          <Show when={u.id !== user()?.id}>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={u.isAdmin}
+                                onChange={async (e) => {
+                                  try {
+                                    const updated = await toggleAdminStatus(
+                                      u.id,
+                                      e.currentTarget.checked
+                                    );
 
-                                  setSelectedUser((prev) =>
-                                    prev && prev.id === updated.id
-                                      ? { ...prev, isAdmin: updated.isAdmin }
-                                      : prev
-                                  );
+                                    setSelectedUser((prev) =>
+                                      prev && prev.id === updated.id
+                                        ? { ...prev, isAdmin: updated.isAdmin }
+                                        : prev
+                                    );
 
-                                  await refetch();
-                                } catch (err) {
-                                  alert("Erro ao atualizar status de admin.");
-                                  console.error(err);
-                                }
-                              }}
-                              class="sr-only peer"
-                            />
-                            <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500 rounded-full peer dark:bg-gray-700 peer-checked:bg-blue-600 transition-all duration-300"></div>
-                            <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-all duration-300 peer-checked:translate-x-5"></div>
-                          </label>
+                                    await refetch();
+                                  } catch (err) {
+                                    alert("Erro ao atualizar status de admin.");
+                                    console.error(err);
+                                  }
+                                }}
+                                class="sr-only peer"
+                              />
+                              <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500 rounded-full peer dark:bg-gray-700 peer-checked:bg-blue-600 transition-all duration-300"></div>
+                              <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-all duration-300 peer-checked:translate-x-5"></div>
+                            </label>
+                          </Show>
                         </div>
                       </td>
                     </tr>
