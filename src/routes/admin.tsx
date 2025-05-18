@@ -58,10 +58,20 @@ const removeAdminStatus = async (userId: number) => {
   return res.json();
 };
 
+const toggleAdminStatus = async (userId: number, isAdmin: boolean) => {
+  const res = await fetch(`${API_BASE}/users/${userId}`, {
+    method: "PUT",
+    headers: jsonHeaders,
+    body: JSON.stringify({ isAdmin }),
+  });
+  if (!res.ok) throw new Error("Erro ao atualizar status de admin");
+  return res.json();
+};
+
 export default function AdminPage() {
   const { user, setUser } = useUser();
   const navigate = useNavigate();
-  const [users] = createResource(fetchUsers);
+  const [users, { refetch }] = createResource(fetchUsers);
   const [selectedUser, setSelectedUser] = createSignal<User | null>(null);
   const [searchTerm, setSearchTerm] = createSignal("");
   const filteredUsers = (): User[] => {
@@ -165,7 +175,7 @@ export default function AdminPage() {
             {(u) => (
               <div
                 class="p-4 bg-white dark:bg-gray-800 rounded-2xl shadow-lg dark:shadow-[0_4px_20px_rgba(255,255,255,0.1)] flex flex-col items-center text-center"
-                onClick={() => setSelectedUser(u)}
+                // onClick={() => setSelectedUser(u)}
               >
                 <Show
                   when={u.avatarUrl}
@@ -173,6 +183,7 @@ export default function AdminPage() {
                     <div
                       class="w-20 h-20 rounded-full flex items-center justify-center text-white font-bold text-xl mb-3 shadow"
                       style={`background-color: ${getRandomColor(u.id)}`}
+                      onClick={() => setSelectedUser(u)}
                     >
                       {u.name.charAt(0).toUpperCase()}
                     </div>
@@ -182,6 +193,7 @@ export default function AdminPage() {
                     src={u.avatarUrl}
                     alt={u.name}
                     class="w-20 h-20 rounded-full border-4 border-blue-500 shadow mb-3"
+                    onClick={() => setSelectedUser(u)}
                   />
                 </Show>
                 <h2 class="text-lg font-semibold text-blue-600">{u.name}</h2>
@@ -215,6 +227,38 @@ export default function AdminPage() {
                         >
                           {u.isAdmin ? "Sim" : "Não"}
                         </span>
+
+                        {/* Switch para alterar status de admin */}
+                        <div class="mt-2 flex items-center gap-2">
+                          <label class="relative inline-flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={u.isAdmin}
+                              onChange={async (e) => {
+                                try {
+                                  const updated = await toggleAdminStatus(
+                                    u.id,
+                                    e.currentTarget.checked
+                                  );
+
+                                  setSelectedUser((prev) =>
+                                    prev && prev.id === updated.id
+                                      ? { ...prev, isAdmin: updated.isAdmin }
+                                      : prev
+                                  );
+
+                                  await refetch();
+                                } catch (err) {
+                                  alert("Erro ao atualizar status de admin.");
+                                  console.error(err);
+                                }
+                              }}
+                              class="sr-only peer"
+                            />
+                            <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-500 rounded-full peer dark:bg-gray-700 peer-checked:bg-blue-600 transition-all duration-300"></div>
+                            <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-all duration-300 peer-checked:translate-x-5"></div>
+                          </label>
+                        </div>
                       </td>
                     </tr>
                   </tbody>
