@@ -95,14 +95,14 @@ export default function AdminPage() {
     );
   };
 
-  function addExerciseField() {
+  const addExerciseField = () => {
     setExerciseFields([...exerciseFields(), { name: "", reps: "", notes: "" }]);
-  }
+  };
 
-  function removeExerciseField(index: number) {
+  const removeExerciseField = (index: number) => {
     const updated = exerciseFields().filter((_, i) => i !== index);
     setExerciseFields(updated);
-  }
+  };
 
   const handleClickOutside = (e: MouseEvent) => {
     const modal = document.getElementById("user-modal");
@@ -172,9 +172,6 @@ export default function AdminPage() {
   if (!user() || !user()?.isAdmin) {
     return null;
   }
-
-  // console.log("🔐 Enviando headers:", jsonHeaders);
-  // console.log("🔐 API KEY:", import.meta.env.VITE_API_KEY);
 
   const isEditing = !!editingWorkout();
 
@@ -341,7 +338,13 @@ export default function AdminPage() {
           >
             <button
               class="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold"
-              onClick={() => setSelectedUser(null)}
+              onClick={() => {
+                setSelectedUser(null);
+                setEditingWorkout(null);
+                setWorkoutName("");
+                setWorkoutDescription("");
+                setExerciseFields([{ name: "", reps: "", notes: "" }]);
+              }}
             >
               ×
             </button>
@@ -489,17 +492,35 @@ export default function AdminPage() {
                           placeholder="Nome do exercício"
                           class="w-full mb-1 px-2 py-1 rounded border"
                           required
+                          value={ex.name}
+                          onInput={(e) => {
+                            const updated = [...exerciseFields()];
+                            updated[index()].name = e.currentTarget.value;
+                            setExerciseFields(updated);
+                          }}
                         />
                         <input
                           name={`reps-${index()}`}
                           placeholder="Repetições"
                           class="w-full mb-1 px-2 py-1 rounded border"
                           required
+                          value={ex.reps}
+                          onInput={(e) => {
+                            const updated = [...exerciseFields()];
+                            updated[index()].reps = e.currentTarget.value;
+                            setExerciseFields(updated);
+                          }}
                         />
                         <input
                           name={`notes-${index()}`}
                           placeholder="Notas (opcional)"
                           class="w-full mb-1 px-2 py-1 rounded border"
+                          value={ex.notes}
+                          onInput={(e) => {
+                            const updated = [...exerciseFields()];
+                            updated[index()].notes = e.currentTarget.value;
+                            setExerciseFields(updated);
+                          }}
                         />
                         <button
                           type="button"
