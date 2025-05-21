@@ -74,6 +74,15 @@ export default function AdminPage() {
   const [users, { refetch }] = createResource(fetchUsers);
   const [selectedUser, setSelectedUser] = createSignal<User | null>(null);
   const [searchTerm, setSearchTerm] = createSignal("");
+  const [exerciseFields, setExerciseFields] = createSignal([
+    { name: "", reps: "", notes: "" },
+  ]);
+  const [editingWorkout, setEditingWorkout] = createSignal<Workout | null>(
+    null
+  );
+  const [workoutName, setWorkoutName] = createSignal("");
+  const [workoutDescription, setWorkoutDescription] = createSignal("");
+
   const filteredUsers = (): User[] => {
     const term = searchTerm().toLowerCase();
     const allUsers = users() as User[] | undefined;
@@ -86,10 +95,57 @@ export default function AdminPage() {
     );
   };
 
+  function addExerciseField() {
+    setExerciseFields([...exerciseFields(), { name: "", reps: "", notes: "" }]);
+  }
+
+  function removeExerciseField(index: number) {
+    const updated = exerciseFields().filter((_, i) => i !== index);
+    setExerciseFields(updated);
+  }
+
   const handleClickOutside = (e: MouseEvent) => {
     const modal = document.getElementById("user-modal");
     if (modal && !modal.contains(e.target as Node)) {
       setSelectedUser(null);
+    }
+  };
+
+  const handleEditWorkout = (workout: Workout) => {
+    setEditingWorkout(workout);
+    setExerciseFields(
+      workout.exercises.map((ex) => ({
+        name: ex.name,
+        reps: ex.reps,
+        notes: ex.notes || "",
+      }))
+    );
+    setWorkoutName(workout.name);
+    setWorkoutDescription(workout.description || "");
+  };
+
+  const handleDeleteWorkout = async (workoutId: number) => {
+    const confirmed = window.confirm("Deseja realmente excluir este treino?");
+    if (!confirmed) return;
+
+    try {
+      await fetch(`${API_BASE}/workouts/${workoutId}`, {
+        method: "DELETE",
+        headers: jsonHeaders,
+      });
+
+      // Refetch dos usuários após exclusão
+      await refetch();
+      setSelectedUser((prev) => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          workouts: prev.workouts.filter((w) => w.id !== workoutId),
+        };
+      });
+    } catch (err) {
+      alert("Erro ao excluir treino");
+      console.error(err);
     }
   };
 
@@ -116,6 +172,11 @@ export default function AdminPage() {
   if (!user() || !user()?.isAdmin) {
     return null;
   }
+
+  // console.log("🔐 Enviando headers:", jsonHeaders);
+  // console.log("🔐 API KEY:", import.meta.env.VITE_API_KEY);
+
+  const isEditing = !!editingWorkout();
 
   return (
     <Layout>
@@ -276,7 +337,7 @@ export default function AdminPage() {
         <div class="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div
             id="user-modal"
-            class="bg-white dark:bg-gray-900 p-6 rounded-xl max-w-lg w-full relative shadow-xl"
+            class="bg-white dark:bg-gray-900 p-6 rounded-xl max-w-5xl w-full relative shadow-xl"
           >
             <button
               class="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold"
@@ -284,41 +345,192 @@ export default function AdminPage() {
             >
               ×
             </button>
-            <h2 class="text-xl font-bold text-blue-600 mb-4">
-              {selectedUser()?.name} - Treinos
-            </h2>
-            <Show
-              when={(() => {
-                const user = selectedUser();
-                return (
-                  user &&
-                  Array.isArray(user.workouts) &&
-                  user.workouts.length > 0
-                );
-              })()}
-              fallback={<p>Sem treinos cadastrados.</p>}
-            >
-              <For each={selectedUser()?.workouts}>
-                {(workout) => (
-                  <div class="mb-4">
-                    <h3 class="font-semibold text-blue-500">{workout.name}</h3>
-                    <p class="text-sm text-gray-600 dark:text-gray-300 mb-1">
-                      {workout.description || "Sem descrição"}
-                    </p>
-                    <ul class="list-disc list-inside text-sm text-gray-700 dark:text-gray-200">
-                      <For each={workout.exercises}>
-                        {(ex) => (
-                          <li>
-                            <strong>{ex.name}</strong> - {ex.reps}
-                            {ex.notes && ` (${ex.notes})`}
-                          </li>
-                        )}
-                      </For>
-                    </ul>
+
+            <div class="flex flex-col lg:flex-row gap-6 mt-6">
+              {/* Lista de treinos */}
+              <div class="flex-1 overflow-y-auto max-h-[60vh] pr-2">
+                <h2 class="text-xl font-bold text-blue-600 mb-4">
+                  {selectedUser()?.name} - Treinos
+                </h2>
+                <Show
+                  when={selectedUser()?.workouts?.length}
+                  fallback={<p>Sem treinos cadastrados.</p>}
+                >
+                  <For each={selectedUser()?.workouts}>
+                    {(workout) => (
+                      <div class="mb-4 border-b border-gray-300 pb-2">
+                        <div class="flex justify-between items-center">
+                          <h3 class="font-semibold text-blue-500">
+                            {workout.name}
+                          </h3>
+                          <div class="flex gap-2">
+                            <button
+                              class="text-sm text-yellow-500"
+                              onClick={() => handleEditWorkout(workout)}
+                            >
+                              Editar
+                            </button>
+                            <button
+                              class="text-sm text-red-500"
+                              onClick={() => handleDeleteWorkout(workout.id)}
+                            >
+                              Excluir
+                            </button>
+                          </div>
+                        </div>
+                        <p class="text-sm text-gray-600 dark:text-gray-300">
+                          {workout.description || "Sem descrição"}
+                        </p>
+                        <ul class="list-disc ml-5 text-sm">
+                          <For each={workout.exercises}>
+                            {(ex) => (
+                              <li>
+                                <strong>{ex.name}</strong> - {ex.reps}
+                                {ex.notes && ` (${ex.notes})`}
+                              </li>
+                            )}
+                          </For>
+                        </ul>
+                      </div>
+                    )}
+                  </For>
+                </Show>
+              </div>
+
+              {/* Formulário novo treino */}
+              <div class="w-full lg:w-1/3 overflow-y-auto max-h-[60vh] pr-2">
+                <h3 class="text-lg font-bold text-green-600 mb-2">
+                  Novo Treino
+                </h3>
+                <form
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    const form = e.currentTarget;
+                    const formData = new FormData(form);
+                    const exercises = exerciseFields().map((_, index) => ({
+                      name: formData.get(`name-${index}`),
+                      reps: formData.get(`reps-${index}`),
+                      notes: formData.get(`notes-${index}`),
+                    }));
+
+                    const newWorkout = {
+                      name: workoutName(),
+                      description: workoutDescription(),
+                      exercises,
+                    };
+
+                    const isEditingNow = !!editingWorkout();
+
+                    try {
+                      const res = await fetch(
+                        isEditingNow
+                          ? `${API_BASE}/workouts/${editingWorkout()?.id}`
+                          : `${API_BASE}/workouts/user/${selectedUser()?.id}`,
+                        {
+                          method: isEditingNow ? "PUT" : "POST",
+                          headers: jsonHeaders,
+                          body: JSON.stringify(newWorkout),
+                        }
+                      );
+
+                      if (!res.ok) {
+                        throw new Error("Erro ao salvar treino");
+                      }
+
+                      const savedWorkout = await res.json();
+
+                      setSelectedUser((prev) =>
+                        prev
+                          ? {
+                              ...prev,
+                              workouts: isEditingNow
+                                ? prev.workouts.map((w) =>
+                                    w.id === savedWorkout.id ? savedWorkout : w
+                                  )
+                                : [...prev.workouts, savedWorkout],
+                            }
+                          : null
+                      );
+
+                      setExerciseFields([{ name: "", reps: "", notes: "" }]);
+                      setEditingWorkout(null);
+                      setWorkoutName("");
+                      setWorkoutDescription("");
+                      form.reset();
+                    } catch (err) {
+                      alert("Erro ao salvar treino");
+                      console.error(err);
+                    }
+                  }}
+                >
+                  <input
+                    name="name"
+                    placeholder="Nome do treino"
+                    class="mb-2 w-full px-3 py-2 rounded border"
+                    required
+                    value={workoutName()}
+                    onInput={(e) => setWorkoutName(e.currentTarget.value)}
+                  />
+                  <input
+                    name="description"
+                    placeholder="Descrição"
+                    class="mb-4 w-full px-3 py-2 rounded border"
+                    value={workoutDescription()}
+                    onInput={(e) =>
+                      setWorkoutDescription(e.currentTarget.value)
+                    }
+                  />
+
+                  <For each={exerciseFields()}>
+                    {(ex, index) => (
+                      <div class="mb-2 border p-2 rounded bg-gray-100 dark:bg-gray-800">
+                        <input
+                          name={`name-${index()}`}
+                          placeholder="Nome do exercício"
+                          class="w-full mb-1 px-2 py-1 rounded border"
+                          required
+                        />
+                        <input
+                          name={`reps-${index()}`}
+                          placeholder="Repetições"
+                          class="w-full mb-1 px-2 py-1 rounded border"
+                          required
+                        />
+                        <input
+                          name={`notes-${index()}`}
+                          placeholder="Notas (opcional)"
+                          class="w-full mb-1 px-2 py-1 rounded border"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeExerciseField(index())}
+                          class="text-xs text-red-500 hover:underline"
+                        >
+                          Remover exercício
+                        </button>
+                      </div>
+                    )}
+                  </For>
+
+                  <div class="flex flex-col">
+                    <button
+                      type="button"
+                      onClick={addExerciseField}
+                      class="text-sm text-blue-600 hover:underline mb-2 self-start"
+                    >
+                      + Adicionar exercício
+                    </button>
+
+                    <button
+                      type="submit"
+                      class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mt-2"
+                    >
+                      {isEditing ? "Salvar Alterações" : "Criar Treino"}
+                    </button>
                   </div>
-                )}
-              </For>
-            </Show>
+                </form>
+              </div>
+            </div>
           </div>
         </div>
       </Show>
