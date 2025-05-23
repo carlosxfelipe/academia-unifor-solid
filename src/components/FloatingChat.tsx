@@ -22,7 +22,7 @@ export default function FloatingChat() {
 
     try {
       const res = await fetch(
-        "https://academia-unifor-fastapi.onrender.com/gemini/chat",
+        "https://academia-unifor-fastapi-1.onrender.com/gemini/chat",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
